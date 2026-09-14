@@ -1,0 +1,54 @@
+name: kiclient
+options:
+  bundleIdPrefix: com.kiclient
+  deploymentTarget:
+    macOS: "14.0"
+
+settings:
+  base:
+    MACOSX_DEPLOYMENT_TARGET: "14.0"
+    SWIFT_VERSION: "5.0"
+
+targets:
+  kiclient:
+    type: application
+    platform: macOS
+    deploymentTarget: "14.0"
+    sources:
+      - path: kiclient
+    settings:
+      base:
+        PRODUCT_NAME: kiclient
+        PRODUCT_BUNDLE_IDENTIFIER: com.kiclient.app
+        GENERATE_INFOPLIST_FILE: YES
+        SWIFT_OBJC_BRIDGING_HEADER: kiclient/Bridging/libmpv-bridging-header.h
+        HEADER_SEARCH_PATHS:
+          - $(inherited)
+          - /opt/homebrew/include
+        LIBRARY_SEARCH_PATHS:
+          - $(inherited)
+          - /opt/homebrew/lib
+        OTHER_LDFLAGS:
+          - $(inherited)
+          - -lmpv
+        CODE_SIGN_ENTITLEMENTS: kiclient/Resources/kiclient.entitlements
+        ENABLE_HARDENED_RUNTIME: YES
+
+  kiclientTests:
+    type: bundle.unit-test
+    platform: macOS
+    deploymentTarget: "14.0"
+    sources:
+      - path: Tests
+    dependencies:
+      - target: kiclient
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.kiclient.appTests
+        GENERATE_INFOPLIST_FILE: YES
+        HEADER_SEARCH_PATHS:
+          - $(inherited)
+          - /opt/homebrew/include
+        LIBRARY_SEARCH_PATHS:
+          - $(inherited)
+          - /opt/homebrew/lib

@@ -1,0 +1,543 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		09AC8F87F000D4B0EBE7CBD1 /* KickChatSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = E06D82F37AB1030B47346D40 /* KickChatSocket.swift */; };
+		0C3BFBCD6CB1FFFDE7D37C51 /* KickChatSender.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1106EB36DBB4C06C1400706D /* KickChatSender.swift */; };
+		197E4B70DFCE93D140ED3C54 /* PlayerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED3DC79FE09FA23AC578FF7 /* PlayerViewModel.swift */; };
+		1AF965A33B8B17A7D0892FE3 /* ChatViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3983B80B56E01F8416A8F145 /* ChatViewModel.swift */; };
+		1FA3450542CB6BB2D21D96A2 /* MainWindowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9448488FEB0F7AB8F453E6FC /* MainWindowView.swift */; };
+		214B1467266FBEFBBA3FF429 /* KiclientApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F417379AF99C16DD8025B162 /* KiclientApp.swift */; };
+		39A1F7FCFF9E37D2B1B80635 /* MPVMetalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F25EFB2ABF9631B629B08EE8 /* MPVMetalView.swift */; };
+		4971DC1786AC7C8A59732A20 /* ChatListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6290FC2C32C5BF069BCEDAA2 /* ChatListView.swift */; };
+		589B66A7397E87D8BF192E24 /* KickAuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00F9B37FD50057FA8F62E2BB /* KickAuthManager.swift */; };
+		88DBD9F7236292D368E37964 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AD72C7D615538D4D6528FE1 /* SettingsView.swift */; };
+		AF58B01F09473AA211C2067E /* KickChannelAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FF04CE120932E9A70DBC21E /* KickChannelAPI.swift */; };
+		BE7A6D060006B851C755713C /* MPVController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 005022B4E04C0BE03749809B /* MPVController.swift */; };
+		C0F62BDB6934FB35C16BB938 /* ChatInputBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 787872DAAC5D211B94F491A2 /* ChatInputBarView.swift */; };
+		F336CE0E7BA37925B3C134DA /* KiclientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6782EACD9BE05985FD8AB27 /* KiclientTests.swift */; };
+		F96A6BA05E59287A0E3CBCA1 /* ChatMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3AF1A1CDDB11957A2FE127B /* ChatMessage.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		E280D4AD83356FB37494E179 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F4E40236F99718D4ABBD1D6F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F4B37E5994D3D6CC4239F870;
+			remoteInfo = kiclient;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		005022B4E04C0BE03749809B /* MPVController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPVController.swift; sourceTree = "<group>"; };
+		00F9B37FD50057FA8F62E2BB /* KickAuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KickAuthManager.swift; sourceTree = "<group>"; };
+		1106EB36DBB4C06C1400706D /* KickChatSender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KickChatSender.swift; sourceTree = "<group>"; };
+		1109777C72F73B0CE0500928 /* kiclient.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = kiclient.entitlements; sourceTree = "<group>"; };
+		1FF04CE120932E9A70DBC21E /* KickChannelAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KickChannelAPI.swift; sourceTree = "<group>"; };
+		3983B80B56E01F8416A8F145 /* ChatViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewModel.swift; sourceTree = "<group>"; };
+		3AD72C7D615538D4D6528FE1 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		53DFCA96810183104C1111C7 /* kiclientTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = kiclientTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		6290FC2C32C5BF069BCEDAA2 /* ChatListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatListView.swift; sourceTree = "<group>"; };
+		6533F118AD572AC6EEE6F586 /* kiclient.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = kiclient.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		787872DAAC5D211B94F491A2 /* ChatInputBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatInputBarView.swift; sourceTree = "<group>"; };
+		9448488FEB0F7AB8F453E6FC /* MainWindowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainWindowView.swift; sourceTree = "<group>"; };
+		C3AF1A1CDDB11957A2FE127B /* ChatMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessage.swift; sourceTree = "<group>"; };
+		CED3DC79FE09FA23AC578FF7 /* PlayerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerViewModel.swift; sourceTree = "<group>"; };
+		D6782EACD9BE05985FD8AB27 /* KiclientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KiclientTests.swift; sourceTree = "<group>"; };
+		E06D82F37AB1030B47346D40 /* KickChatSocket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KickChatSocket.swift; sourceTree = "<group>"; };
+		F25EFB2ABF9631B629B08EE8 /* MPVMetalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPVMetalView.swift; sourceTree = "<group>"; };
+		F417379AF99C16DD8025B162 /* KiclientApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KiclientApp.swift; sourceTree = "<group>"; };
+		FD236DB931FBDDDDD642FD48 /* libmpv-bridging-header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "libmpv-bridging-header.h"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		24E49A6402B1310B978C0AE5 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				1109777C72F73B0CE0500928 /* kiclient.entitlements */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		2C21C00EA4C685D8EC39C74A /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				787872DAAC5D211B94F491A2 /* ChatInputBarView.swift */,
+				6290FC2C32C5BF069BCEDAA2 /* ChatListView.swift */,
+				9448488FEB0F7AB8F453E6FC /* MainWindowView.swift */,
+				3AD72C7D615538D4D6528FE1 /* SettingsView.swift */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
+		561EADFD6356C18745EEE10C = {
+			isa = PBXGroup;
+			children = (
+				A8D6E1CAC0B5603AE4515AF1 /* kiclient */,
+				CAD3275AB5F83E7875E1562F /* Tests */,
+				CF1B1D565751AC94E8653AB4 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		6E4833B1B8CA4E15EDCA308E /* Bridging */ = {
+			isa = PBXGroup;
+			children = (
+				FD236DB931FBDDDDD642FD48 /* libmpv-bridging-header.h */,
+			);
+			path = Bridging;
+			sourceTree = "<group>";
+		};
+		A8D6E1CAC0B5603AE4515AF1 /* kiclient */ = {
+			isa = PBXGroup;
+			children = (
+				F179F1151A397DAFE69AA846 /* App */,
+				6E4833B1B8CA4E15EDCA308E /* Bridging */,
+				BEFE6143EB0ADDB9F4E20055 /* Chat */,
+				E71960E2B3B720E738E3A586 /* Networking */,
+				E0F564F688A5C951997711C7 /* Player */,
+				24E49A6402B1310B978C0AE5 /* Resources */,
+				2C21C00EA4C685D8EC39C74A /* UI */,
+			);
+			path = kiclient;
+			sourceTree = "<group>";
+		};
+		BEFE6143EB0ADDB9F4E20055 /* Chat */ = {
+			isa = PBXGroup;
+			children = (
+				C3AF1A1CDDB11957A2FE127B /* ChatMessage.swift */,
+				3983B80B56E01F8416A8F145 /* ChatViewModel.swift */,
+				00F9B37FD50057FA8F62E2BB /* KickAuthManager.swift */,
+				1106EB36DBB4C06C1400706D /* KickChatSender.swift */,
+				E06D82F37AB1030B47346D40 /* KickChatSocket.swift */,
+			);
+			path = Chat;
+			sourceTree = "<group>";
+		};
+		CAD3275AB5F83E7875E1562F /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				D6782EACD9BE05985FD8AB27 /* KiclientTests.swift */,
+			);
+			path = Tests;
+			sourceTree = "<group>";
+		};
+		CF1B1D565751AC94E8653AB4 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				6533F118AD572AC6EEE6F586 /* kiclient.app */,
+				53DFCA96810183104C1111C7 /* kiclientTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E0F564F688A5C951997711C7 /* Player */ = {
+			isa = PBXGroup;
+			children = (
+				005022B4E04C0BE03749809B /* MPVController.swift */,
+				F25EFB2ABF9631B629B08EE8 /* MPVMetalView.swift */,
+				CED3DC79FE09FA23AC578FF7 /* PlayerViewModel.swift */,
+			);
+			path = Player;
+			sourceTree = "<group>";
+		};
+		E71960E2B3B720E738E3A586 /* Networking */ = {
+			isa = PBXGroup;
+			children = (
+				1FF04CE120932E9A70DBC21E /* KickChannelAPI.swift */,
+			);
+			path = Networking;
+			sourceTree = "<group>";
+		};
+		F179F1151A397DAFE69AA846 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				F417379AF99C16DD8025B162 /* KiclientApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		AD4CB2E049F1DFF0667ECD8C /* kiclientTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 46442E974BF34A94A2EAF767 /* Build configuration list for PBXNativeTarget "kiclientTests" */;
+			buildPhases = (
+				7022BBCA7EE8FD0B6716BE41 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				2EF87B105F2A5C1C4E2597D6 /* PBXTargetDependency */,
+			);
+			name = kiclientTests;
+			packageProductDependencies = (
+			);
+			productName = kiclientTests;
+			productReference = 53DFCA96810183104C1111C7 /* kiclientTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		F4B37E5994D3D6CC4239F870 /* kiclient */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 61C27BC4441C86F0B6B4F203 /* Build configuration list for PBXNativeTarget "kiclient" */;
+			buildPhases = (
+				61F09EB66AC3A8498645CE92 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = kiclient;
+			packageProductDependencies = (
+			);
+			productName = kiclient;
+			productReference = 6533F118AD572AC6EEE6F586 /* kiclient.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		F4E40236F99718D4ABBD1D6F /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+				};
+			};
+			buildConfigurationList = 5D16F29FA272A6EF8FCD11A6 /* Build configuration list for PBXProject "kiclient" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 561EADFD6356C18745EEE10C;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = CF1B1D565751AC94E8653AB4 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				F4B37E5994D3D6CC4239F870 /* kiclient */,
+				AD4CB2E049F1DFF0667ECD8C /* kiclientTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		61F09EB66AC3A8498645CE92 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C0F62BDB6934FB35C16BB938 /* ChatInputBarView.swift in Sources */,
+				4971DC1786AC7C8A59732A20 /* ChatListView.swift in Sources */,
+				F96A6BA05E59287A0E3CBCA1 /* ChatMessage.swift in Sources */,
+				1AF965A33B8B17A7D0892FE3 /* ChatViewModel.swift in Sources */,
+				589B66A7397E87D8BF192E24 /* KickAuthManager.swift in Sources */,
+				AF58B01F09473AA211C2067E /* KickChannelAPI.swift in Sources */,
+				0C3BFBCD6CB1FFFDE7D37C51 /* KickChatSender.swift in Sources */,
+				09AC8F87F000D4B0EBE7CBD1 /* KickChatSocket.swift in Sources */,
+				214B1467266FBEFBBA3FF429 /* KiclientApp.swift in Sources */,
+				BE7A6D060006B851C755713C /* MPVController.swift in Sources */,
+				39A1F7FCFF9E37D2B1B80635 /* MPVMetalView.swift in Sources */,
+				1FA3450542CB6BB2D21D96A2 /* MainWindowView.swift in Sources */,
+				197E4B70DFCE93D140ED3C54 /* PlayerViewModel.swift in Sources */,
+				88DBD9F7236292D368E37964 /* SettingsView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7022BBCA7EE8FD0B6716BE41 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F336CE0E7BA37925B3C134DA /* KiclientTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		2EF87B105F2A5C1C4E2597D6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F4B37E5994D3D6CC4239F870 /* kiclient */;
+			targetProxy = E280D4AD83356FB37494E179 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		40C04010C8DF5F1840EAEC70 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/opt/homebrew/include,
+				);
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/opt/homebrew/lib,
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kiclient.appTests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/kiclient.app/Contents/MacOS/kiclient";
+			};
+			name = Debug;
+		};
+		498A541983D371D65BBB5053 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = kiclient/Resources/kiclient.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/opt/homebrew/include,
+				);
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/opt/homebrew/lib,
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-lmpv",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.kiclient.app;
+				PRODUCT_NAME = kiclient;
+				SDKROOT = macosx;
+				SWIFT_OBJC_BRIDGING_HEADER = "kiclient/Bridging/libmpv-bridging-header.h";
+			};
+			name = Release;
+		};
+		6E5FA9371FBC7D058D71CE17 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/opt/homebrew/include,
+				);
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/opt/homebrew/lib,
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kiclient.appTests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/kiclient.app/Contents/MacOS/kiclient";
+			};
+			name = Release;
+		};
+		99BA4520C012302137A06444 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = kiclient/Resources/kiclient.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/opt/homebrew/include,
+				);
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/opt/homebrew/lib,
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-lmpv",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.kiclient.app;
+				PRODUCT_NAME = kiclient;
+				SDKROOT = macosx;
+				SWIFT_OBJC_BRIDGING_HEADER = "kiclient/Bridging/libmpv-bridging-header.h";
+			};
+			name = Debug;
+		};
+		D382B4F91616AA19C2F90FEF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		E29148BB92334436CDA7D1B4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		46442E974BF34A94A2EAF767 /* Build configuration list for PBXNativeTarget "kiclientTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				40C04010C8DF5F1840EAEC70 /* Debug */,
+				6E5FA9371FBC7D058D71CE17 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		5D16F29FA272A6EF8FCD11A6 /* Build configuration list for PBXProject "kiclient" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E29148BB92334436CDA7D1B4 /* Debug */,
+				D382B4F91616AA19C2F90FEF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		61C27BC4441C86F0B6B4F203 /* Build configuration list for PBXNativeTarget "kiclient" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				99BA4520C012302137A06444 /* Debug */,
+				498A541983D371D65BBB5053 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = F4E40236F99718D4ABBD1D6F /* Project object */;
+}

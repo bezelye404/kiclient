@@ -1,0 +1,82 @@
+# GitHub Standard .gitignore for macOS, Swift, and XcodeGen projects
+
+# Xcode
+build/
+DerivedData/
+*.moved-aside
+*.xccheckout
+*.xcscmblueprint
+*.xcuserstate
+xcuserdata/
+*.xcuserdatad
+
+## User Specific & Workspace State
+*.xcodeproj/xcuserdata/
+*.xcodeproj/project.xcworkspace/xcuserdata/
+*.xcworkspace/xcuserdata/
+
+## App Packaging & Artifacts
+*.app
+*.dmg
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+## Profiling and Code Coverage
+*.profraw
+*.profdata
+*.xcresult
+
+## Swift Package Manager
+.build/
+Packages/
+Package.pins
+
+# macOS System & Finder Files
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.Spotlight-V100
+.Trashes
+.TemporaryItems
+.fseventsd
+
+# Secrets, Credentials & Personal Environment Files
+*.key
+*.pem
+*.p12
+*.cer
+*.mobileprovision
+.env
+.env.*
+*.secret
+*.token
+
+# Agent and System Generated Logs & Scratches
+.system_generated/
+*.log
+.agents/
+scratch/
+
+# Agent Rules & Architecture Documentation (Case-insensitive support)
+AGENTS.md
+agents.md
+ARCHITECTURE.md
+architecture.md
+CHANGELOG.md
+changelog.md
+DECISIONS.md
+decisions.md
+GEMINI.md
+gemini.md
+KICK_API_NOTES.md
+kick_api_notes.md
+PERFORMANCE.md
+performance.md
+ROADMAP.md
+roadmap.md
+TESTING.md
+testing.md
+
