@@ -1,33 +1,54 @@
 # kiclient
 
-mpv tabanlı, düşük kaynak tüketimli, native macOS Kick.com yayın izleyici ve sohbet istemcisi.
+A featherweight, battery-friendly macOS client for Kick.com streams and chat. Built with Swift & libmpv so your Mac stays cool and quiet. (still work in progress about being cool :/ )
 
-## Özellikler
+---
 
-- Kick kanal slug'ı ile yayını anında başlatma, libmpv + Metal (`gpu-next`) ile donanım hızlandırmalı oynatma.
-- Apple VideoToolbox donanım decode'u (`--hwdec=videotoolbox`).
-- Gerçek zamanlı sohbet akışı (Pusher WebSocket `v2`, giriş gerektirmez, 100ms batching, 300 mesaj bellek sınırı).
-- Kick hesabıyla giriş yaparak sohbete mesaj gönderme (OAuth 2.1 + RFC 7636 PKCE, Keychain saklama).
-- **Arka Plan Eko Modu**: Pencere gizlendiğinde veya simge durumundayken video render'ı duraklatılır (`vid=no`), GPU kullanımı %0'a inerken ses ve sohbet bağlantısı kesilmez.
-- **HLS Kalite Seçimi**: 1080p60, 720p60, 480p30, 160p ve Otomatik kalite desteği.
-- **Dinamik Sohbet Yazı Boyutu**: 11pt, 13pt ve 15pt ölçeklenebilirlik.
-- **Dahili Geliştirici Konsolu (Dev Console)**: Canlı RAM/CPU ölçümü, log filtreleme, panoya kopyalama ve interaktif mpv komut satırı (`⌘D`).
-- Rekor düzeyde düşük RAM ayak izi: Boşta ~105 MB, 1080p oynatımda ~135 MB RSS (bkz. `PERFORMANCE.md`).
+### Why kiclient?
 
-## Gereksinimler
+Watching Kick in a bloated browser tab easily eats 1–2 GB of RAM, spins up your laptop fans, and drains your battery.
 
-- macOS 14.0+ (Metal, Swift Concurrency ve `ASWebAuthenticationSession`).
-- Xcode 15+.
-- XcodeGen (`brew install xcodegen`).
-- [Homebrew](https://brew.sh) ile kurulmuş `mpv` (geliştirme aşamasında dylib kaynağı):
+**kiclient** is built natively for macOS:
 
-  ```bash
-  brew install mpv
-  ```
+- Streams video with hardware-accelerated **libmpv** + **Apple VideoToolbox**.
+- Sits comfortably around **~100 MB of RAM** and barely touches your CPU.
+- Looks and feels like a real Mac app, not a wrapped web page.
 
-- Bir Kick Developer App (OAuth test etmek için): `kick.com/settings/developer` üzerinden client ID alınmalı.
+---
 
-## Kurulum (Geliştirme)
+## Highlights
+
+- 📺 **Buttery Smooth Video**: Full hardware decode with zero frame drops and locked audio/video sync.
+- 💬 **Instant Live Chat**: Reads chat directly via WebSocket with zero login needed. Fast, smooth, and capped so it never bogs down.
+- 🔐 **Send Messages Safely**: Log in with your Kick account via OAuth 2.1 (PKCE). Your tokens are encrypted directly inside your macOS Keychain.
+- 🍃 **Smart Eco Mode**: When you hide or minimize the window, video rendering stops (0% GPU) while your audio and chat keep playing in the background.
+- 🎛 **Quality & Sizing Controls**: Pick between Auto, 1080p60, 720p, etc., and scale the chat text size to your liking.
+- 🛠 **Dev Console (`⌘D`)**: Live RAM & CPU monitors, log stream, and an interactive mpv prompt for anyone who likes to tinker.
+
+---
+
+## Shortcuts
+
+| Key | Action |
+| --- | --- |
+| `Space` | Play / Pause |
+| `⌘D` | Toggle Dev Console |
+| `⌘,` | Settings |
+| `⌘⌥C` | Toggle Chat Panel |
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+You'll need `mpv` and `xcodegen` installed via [Homebrew](https://brew.sh):
+
+```bash
+brew install mpv xcodegen
+```
+
+### Build & Run
 
 ```bash
 git clone <repo-url>
@@ -36,35 +57,33 @@ xcodegen generate
 open kiclient.xcodeproj
 ```
 
-libmpv linki ve bridging header ayarları için `ARCHITECTURE.md` → "mpv Entegrasyonu" bölümüne bakın.
-
-OAuth için `.env` benzeri bir gizli dosya kullanılmaz; client ID Ayarlar ekranından girilir ve token'lar yalnızca macOS Keychain üzerinde saklanır.
-
-## Build & Çalıştırma
+Hit `⌘R` in Xcode to run, or run the test suite from your terminal:
 
 ```bash
-xcodebuild -project kiclient.xcodeproj -scheme kiclient -configuration Debug build
+DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer xcodebuild test -project kiclient.xcodeproj -scheme kiclient -destination 'platform=macOS,arch=arm64'
 ```
 
-veya doğrudan Xcode üzerinden ⌘R.
+---
 
-## Dağıtım Notu
+## Good to Know
 
-libmpv dylib'inin uygulama paketine gömülmesi, code signing ve notarization gerektirir (App Store dışı dağıtım dahi). Detaylar için `ARCHITECTURE.md` → "Riskler" bölümü.
+- **Zero Electron / WebView**: Strictly native AppKit & SwiftUI.
+- **Privacy First**: No telemetry, no trackers, and zero credentials in plaintext files. Everything private stays inside your macOS Keychain.
 
-## Proje Dokümanları
+---
 
-Bu proje agent-destekli geliştirme için yapılandırılmıştır. Sırasıyla:
+## Docs & Architecture
 
-- [`AGENTS.md`](./AGENTS.md) — ajan davranış kuralları (önce bu okunmalı)
-- [`ARCHITECTURE.md`](./ARCHITECTURE.md) — sistem tasarımı
-- [`KICK_API_NOTES.md`](./KICK_API_NOTES.md) — Kick API/WS detayları
-- [`DECISIONS.md`](./DECISIONS.md) — mimari kararlar
-- [`PERFORMANCE.md`](./PERFORMANCE.md) — performans hedefleri ve ölçümler
-- [`TESTING.md`](./TESTING.md) — test stratejisi
-- [`ROADMAP.md`](./ROADMAP.md) — fazlı geliştirme planı
-- [`CHANGELOG.md`](./CHANGELOG.md) — değişiklik günlüğü
+If you want to dive deeper into the code:
 
-## Lisans
+- [`ARCHITECTURE.md`](./ARCHITECTURE.md) — System design & modules
+- [`UI_GUIDELINES.md`](./UI_GUIDELINES.md) — Design system & HIG guidelines
+- [`PERFORMANCE.md`](./PERFORMANCE.md) — Benchmarks & memory targets
+- [`KICK_API_NOTES.md`](./KICK_API_NOTES.md) — Reverse-engineered Kick endpoints
+- [`CHANGELOG.md`](./CHANGELOG.md) — What changed recently
 
-Belirlenmedi — proje sahibi tarafından eklenecek.
+---
+
+## License
+
+To be determined by the project owner.
