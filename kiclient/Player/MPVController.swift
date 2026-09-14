@@ -57,6 +57,9 @@ public protocol MPVControlling: AnyObject {
     func stop()
     func setVolume(_ volume: Double)
     func setMuted(_ muted: Bool)
+    func setVideoRenderingEnabled(_ enabled: Bool)
+    func getPropertyString(_ name: String) -> String?
+    func executeUserCommand(_ commandLine: String) -> String
 }
 
 public final class MPVController: MPVControlling {
@@ -100,6 +103,9 @@ public final class MPVController: MPVControlling {
         mpv_observe_property(handle, 1, "time-pos", MPV_FORMAT_DOUBLE)
         mpv_observe_property(handle, 2, "pause", MPV_FORMAT_FLAG)
         mpv_observe_property(handle, 3, "eof-reached", MPV_FORMAT_FLAG)
+
+        // Dahili mpv loglarını AppLogger'a aktar
+        mpv_request_log_messages(handle, "info")
 
         let initStatus = mpv_initialize(handle)
         if initStatus < 0 {
@@ -233,8 +239,67 @@ public final class MPVController: MPVControlling {
                     }
                 }
             }
+        case MPV_EVENT_LOG_MESSAGE:
+            guard let logMsg = event.data?.assumingMemoryBound(to: mpv_event_log_message.self).pointee else { return }
+            let prefix = logMsg.prefix != nil ? String(cString: logMsg.prefix) : "mpv"
+            let text = logMsg.text != nil ? String(cString: logMsg.text).trimmingCharacters(in: .whitespacesAndNewlines) : ""
+            if !text.isEmpty {
+                let lvl: LogLevel
+                switch logMsg.log_level {
+                case MPV_LOG_LEVEL_FATAL, MPV_LOG_LEVEL_ERROR:
+                    lvl = .error
+                case MPV_LOG_LEVEL_WARN:
+                    lvl = .warning
+                case MPV_LOG_LEVEL_DEBUG, MPV_LOG_LEVEL_TRACE:
+                    lvl = .debug
+                default:
+                    lvl = .info
+                }
+                AppLogger.shared.log(lvl, category: .player, "[\(prefix)] \(text)")
+            }
         default:
             break
+        }
+    }
+
+    public func setVideoRenderingEnabled(_ enabled: Bool) {
+        guard let handle = mpv else { return }
+        let vidVal = enabled ? "auto" : "no"
+        mpv_set_property_string(handle, "vid", vidVal)
+        AppLogger.shared.info(category: .player, "Video render modu: \(vidVal)")
+    }
+
+    public func getPropertyString(_ name: String) -> String? {
+        guard let handle = mpv else { return nil }
+        guard let cStr = mpv_get_property_string(handle, name) else { return nil }
+        defer { mpv_free(cStr) }
+        return String(cString: cStr)
+    }
+
+    public func executeUserCommand(_ commandLine: String) -> String {
+        let trimmed = commandLine.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return "Boş komut." }
+        guard let handle = mpv else { return "mpv henüz hazır değil." }
+
+        let parts = trimmed.split(separator: " ").map(String.init)
+        if (parts.first == "get_property" || parts.first == "get") && parts.count >= 2 {
+            let propName = parts[1]
+            if let val = getPropertyString(propName) {
+                AppLogger.shared.info(category: .player, "> \(trimmed) => \(val)")
+                return "\(propName) = \(val)"
+            } else {
+                return "\(propName) okunamadı (nil)"
+            }
+        }
+
+        let res = mpv_command_string(handle, trimmed)
+        if res < 0 {
+            let errStr = String(cString: mpv_error_string(res))
+            AppLogger.shared.error(category: .player, "> \(trimmed) => Hata: \(errStr)")
+            return "Hata (\(res)): \(errStr)"
+        } else {
+            AppLogger.shared.info(category: .player, "> \(trimmed) => Başarılı")
+            return "OK"
         }
     }
 

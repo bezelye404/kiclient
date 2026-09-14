@@ -2,15 +2,19 @@ import SwiftUI
 
 public struct SettingsView: View {
     @ObservedObject var authManager: KickAuthManager
+    @ObservedObject var playerVM: PlayerViewModel
     @Environment(\.dismiss) private var dismiss
 
+    @AppStorage("chatFontSize") private var chatFontSize: Double = 12.0
     @State private var clientIdInput: String = ""
     @State private var redirectURIInput: String = ""
     @State private var isLoggingIn: Bool = false
     @State private var errorMessage: String? = nil
+    @State private var currentRSSMB: Double = 0.0
 
-    public init(authManager: KickAuthManager) {
+    public init(authManager: KickAuthManager, playerVM: PlayerViewModel) {
         self.authManager = authManager
+        self.playerVM = playerVM
     }
 
     public var body: some View {
@@ -32,6 +36,60 @@ public struct SettingsView: View {
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
+                    // Yayın & Kalite Ayarları
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text("Yayın & Oynatma")
+                            .font(.headline)
+
+                        VStack(alignment: .leading, spacing: 10) {
+                            HStack {
+                                Text("Yayın Kalitesi:")
+                                    .font(.subheadline)
+                                Spacer()
+                                Picker("", selection: $playerVM.selectedQuality) {
+                                    ForEach(StreamQuality.allCases) { q in
+                                        Text(q.rawValue).tag(q)
+                                    }
+                                }
+                                .pickerStyle(MenuPickerStyle())
+                                .frame(width: 140)
+                            }
+
+                            Toggle("Arka Plan Eko Modu (Pencere gizliyken GPU'yu duraklat)", isOn: $playerVM.backgroundEcoModeEnabled)
+                                .font(.caption)
+                                .help("Pencere simge durumuna küçültüldüğünde veya başka pencerenin arkasında kaldığında video render durdurulur, ses ve sohbet devam eder.")
+                        }
+                        .padding(12)
+                        .background(Color(NSColor.controlBackgroundColor))
+                        .cornerRadius(8)
+                    }
+
+                    Divider()
+
+                    // Sohbet & Görünüm Ayarları
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text("Sohbet & Görünüm")
+                            .font(.headline)
+
+                        HStack {
+                            Text("Yazı Boyutu:")
+                                .font(.subheadline)
+                            Spacer()
+                            Picker("", selection: $chatFontSize) {
+                                Text("Küçük (11 pt)").tag(11.0)
+                                Text("Normal (13 pt)").tag(13.0)
+                                Text("Büyük (15 pt)").tag(15.0)
+                            }
+                            .pickerStyle(SegmentedPickerStyle())
+                            .frame(width: 240)
+                        }
+                        .padding(12)
+                        .background(Color(NSColor.controlBackgroundColor))
+                        .cornerRadius(8)
+                    }
+
+                    Divider()
+
                     // Kick OAuth Bölümü
                     VStack(alignment: .leading, spacing: 10) {
                         Text("Kick Hesabı & OAuth 2.1")
@@ -102,35 +160,50 @@ public struct SettingsView: View {
 
                     Divider()
 
-                    // Performans ve mpv Bilgisi
+                    // Performans ve Donanım Hızlandırma Bilgisi
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Performans & Donanım Hızlandırma")
                             .font(.headline)
 
-                        VStack(alignment: .leading, spacing: 4) {
+                        VStack(alignment: .leading, spacing: 6) {
+                            HStack {
+                                Text("Canlı RSS Bellek:")
+                                    .foregroundColor(.secondary)
+                                Spacer()
+                                Text(String(format: "%.1f MB", currentRSSMB))
+                                    .bold()
+                                    .foregroundColor(.green)
+                            }
                             HStack {
                                 Text("Video Decode:")
                                     .foregroundColor(.secondary)
+                                Spacer()
                                 Text("Apple VideoToolbox (Donanım)")
                                     .bold()
                             }
                             HStack {
                                 Text("Render Çıktısı:")
                                     .foregroundColor(.secondary)
+                                Spacer()
                                 Text("Metal (gpu-next)")
                                     .bold()
                             }
                             HStack {
                                 Text("Demuxer Bellek Sınırı:")
                                     .foregroundColor(.secondary)
+                                Spacer()
                                 Text("32 MiB max / 16 MiB back")
                                     .bold()
                             }
                             HStack {
-                                Text("Sohbet Bellek Sınırı:")
+                                Text("Görsel Önbelleği (NSCache):")
                                     .foregroundColor(.secondary)
-                                Text("300 mesaj (Rolling Dequeue)")
-                                    .bold()
+                                Spacer()
+                                Button("Önbelleği Temizle") {
+                                    ImageCacheManager.shared.clear()
+                                }
+                                .buttonStyle(BorderlessButtonStyle())
+                                .font(.caption)
                             }
                         }
                         .font(.caption)
@@ -142,10 +215,11 @@ public struct SettingsView: View {
                 .padding(20)
             }
         }
-        .frame(width: 480, height: 460)
+        .frame(width: 500, height: 560)
         .onAppear {
             clientIdInput = authManager.clientId
             redirectURIInput = authManager.redirectURI
+            currentRSSMB = AppLogger.getMemoryUsageMB()
         }
     }
 

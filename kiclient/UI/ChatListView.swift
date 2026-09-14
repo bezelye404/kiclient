@@ -3,9 +3,11 @@ import AppKit
 
 public struct ChatListView: NSViewRepresentable {
     @ObservedObject var viewModel: ChatViewModel
+    var fontSize: CGFloat
 
-    public init(viewModel: ChatViewModel) {
+    public init(viewModel: ChatViewModel, fontSize: CGFloat = 12.0) {
         self.viewModel = viewModel
+        self.fontSize = fontSize
     }
 
     public func makeCoordinator() -> Coordinator {
@@ -40,6 +42,7 @@ public struct ChatListView: NSViewRepresentable {
     }
 
     public func updateNSView(_ nsView: NSScrollView, context: Context) {
+        context.coordinator.parent = self
         context.coordinator.updateMessages(viewModel.messages)
     }
 
@@ -124,13 +127,16 @@ public struct ChatListView: NSViewRepresentable {
         private func makeAttributedString(for message: ChatMessage) -> NSAttributedString {
             let result = NSMutableAttributedString()
 
+            let baseSize = parent.fontSize
+            let badgeSize = max(baseSize - 2, 9)
+
             // Rozetler
             for badge in message.badges {
                 let badgeText = "[\(badge.type.prefix(3).uppercased())] "
                 let badgeAttr = NSAttributedString(
                     string: badgeText,
                     attributes: [
-                        .font: NSFont.boldSystemFont(ofSize: 10),
+                        .font: NSFont.boldSystemFont(ofSize: badgeSize),
                         .foregroundColor: NSColor.systemGray
                     ]
                 )
@@ -146,7 +152,7 @@ public struct ChatListView: NSViewRepresentable {
             let usernameAttr = NSAttributedString(
                 string: "\(message.senderUsername): ",
                 attributes: [
-                    .font: NSFont.boldSystemFont(ofSize: 12),
+                    .font: NSFont.boldSystemFont(ofSize: baseSize),
                     .foregroundColor: senderColor
                 ]
             )
@@ -156,7 +162,7 @@ public struct ChatListView: NSViewRepresentable {
             let messageAttr = NSAttributedString(
                 string: message.content,
                 attributes: [
-                    .font: NSFont.systemFont(ofSize: 12),
+                    .font: NSFont.systemFont(ofSize: baseSize),
                     .foregroundColor: NSColor.labelColor
                 ]
             )

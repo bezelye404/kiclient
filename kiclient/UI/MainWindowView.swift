@@ -5,11 +5,13 @@ public struct MainWindowView: View {
     @StateObject private var chatVM = ChatViewModel()
     @StateObject private var authManager = KickAuthManager()
 
+    @AppStorage("chatFontSize") private var chatFontSize: Double = 12.0
     @State private var channelInput: String = "xqc"
     @State private var directURLInput: String = ""
     @State private var showDirectURLEntry: Bool = false
     @State private var showChatSidebar: Bool = true
     @State private var showSettingsSheet: Bool = false
+    @State private var showDevConsole: Bool = false
 
     public init() {}
 
@@ -19,7 +21,7 @@ public struct MainWindowView: View {
 
     public var body: some View {
         VStack(spacing: 0) {
-            // Üst Kontrol Çubuğu (Kanal & Durum)
+            // Üst Kontrol Çubuğu (Kanal, Durum ve Araçlar)
             HStack(spacing: 12) {
                 Image(systemName: "tv.circle.fill")
                     .foregroundColor(.green)
@@ -101,6 +103,18 @@ public struct MainWindowView: View {
 
                 Spacer()
 
+                // Geliştirici Konsolu Düğmesi
+                Button(action: {
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        showDevConsole.toggle()
+                    }
+                }) {
+                    Image(systemName: showDevConsole ? "terminal.fill" : "terminal")
+                        .foregroundColor(showDevConsole ? .green : .primary)
+                }
+                .help("Geliştirici Konsolu (Dev Console) [⌘D]")
+                .keyboardShortcut("d", modifiers: [.command])
+
                 // Test HLS & Doğrudan URL
                 Button(action: {
                     showDirectURLEntry.toggle()
@@ -122,7 +136,7 @@ public struct MainWindowView: View {
                 }) {
                     Image(systemName: "gearshape.fill")
                 }
-                .help("Ayarlar (Kick OAuth & Performans)")
+                .help("Ayarlar (Kick OAuth, Kalite & Performans)")
 
                 Divider()
                     .frame(height: 20)
@@ -231,7 +245,29 @@ public struct MainWindowView: View {
                         .buttonStyle(BorderlessButtonStyle())
 
                         Slider(value: $playerVM.volume, in: 0...100)
-                            .frame(width: 90)
+                            .frame(width: 80)
+
+                        // Kalite Seçici Menüsü
+                        Menu {
+                            ForEach(StreamQuality.allCases) { q in
+                                Button(action: {
+                                    playerVM.selectedQuality = q
+                                }) {
+                                    HStack {
+                                        Text(q.rawValue)
+                                        if playerVM.selectedQuality == q {
+                                            Image(systemName: "checkmark")
+                                        }
+                                    }
+                                }
+                            }
+                        } label: {
+                            Text(playerVM.selectedQuality.rawValue)
+                                .font(.caption.bold())
+                                .foregroundColor(.secondary)
+                        }
+                        .menuStyle(BorderlessButtonMenuStyle())
+                        .frame(width: 75)
 
                         Spacer()
 
@@ -268,8 +304,8 @@ public struct MainWindowView: View {
 
                         Divider()
 
-                        // Yüksek Hızlı NSTableView Sohbet Listesi
-                        ChatListView(viewModel: chatVM)
+                        // Yüksek Hızlı NSTableView Sohbet Listesi (Dinamik Yazı Boyutu Destekli)
+                        ChatListView(viewModel: chatVM, fontSize: CGFloat(chatFontSize))
                             .background(Color(NSColor.textBackgroundColor))
 
                         Divider()
@@ -288,9 +324,20 @@ public struct MainWindowView: View {
                 }
             }
             .frame(minWidth: 780, minHeight: 450)
+
+            // Alt Geliştirici Konsolu Paneli (Açıksa)
+            if showDevConsole {
+                Divider()
+                DevConsoleView(mpvController: playerVM.controller, onClose: {
+                    withAnimation {
+                        showDevConsole = false
+                    }
+                })
+                .transition(.move(edge: .bottom))
+            }
         }
         .sheet(isPresented: $showSettingsSheet) {
-            SettingsView(authManager: authManager)
+            SettingsView(authManager: authManager, playerVM: playerVM)
         }
         .onAppear {
             if let lastSlug = UserDefaults.standard.string(forKey: "lastWatchedSlug"), !lastSlug.isEmpty {

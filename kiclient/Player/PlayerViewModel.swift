@@ -1,5 +1,26 @@
 import Foundation
 import Combine
+import AppKit
+
+public enum StreamQuality: String, CaseIterable, Identifiable, Sendable {
+    case auto = "Otomatik"
+    case q1080p = "1080p60"
+    case q720p = "720p60"
+    case q480p = "480p30"
+    case q160p = "160p"
+
+    public var id: String { rawValue }
+
+    public var maxBitrate: String? {
+        switch self {
+        case .auto: return "max"
+        case .q1080p: return "8500000"
+        case .q720p: return "4500000"
+        case .q480p: return "2000000"
+        case .q160p: return "500000"
+        }
+    }
+}
 
 public final class PlayerViewModel: ObservableObject {
     @Published public var state: MPVPlaybackState = .idle
@@ -8,6 +29,13 @@ public final class PlayerViewModel: ObservableObject {
     @Published public var currentChannelInfo: ChannelInfo? = nil
     @Published public var channelNotice: String? = nil
     @Published public var isLoadingChannel: Bool = false
+    @Published public var selectedQuality: StreamQuality = .auto {
+        didSet {
+            applyStreamQuality(selectedQuality)
+        }
+    }
+    @Published public var backgroundEcoModeEnabled: Bool = true
+    @Published public var isVideoRenderingActive: Bool = true
     @Published public var volume: Double = 80.0 {
         didSet {
             controller.setVolume(volume)
@@ -22,6 +50,7 @@ public final class PlayerViewModel: ObservableObject {
 
     public let controller: MPVController
     private let channelAPI: ChannelResolving
+    private var cancellables = Set<AnyCancellable>()
 
     public init(
         controller: MPVController = MPVController(),
@@ -30,12 +59,14 @@ public final class PlayerViewModel: ObservableObject {
         self.controller = controller
         self.channelAPI = channelAPI
         setupBindings()
+        setupOcclusionObservers()
     }
 
     private func setupBindings() {
         controller.onStateChanged = { [weak self] newState in
             DispatchQueue.main.async {
                 self?.state = newState
+                AppLogger.shared.info(category: .player, "Oynatıcı durumu: \(newState)")
             }
         }
 
@@ -43,6 +74,48 @@ public final class PlayerViewModel: ObservableObject {
             DispatchQueue.main.async {
                 self?.timePosition = time
             }
+        }
+    }
+
+    private func setupOcclusionObservers() {
+        NotificationCenter.default.publisher(for: NSWindow.didChangeOcclusionStateNotification)
+            .compactMap { $0.object as? NSWindow }
+            .sink { [weak self] window in
+                self?.handleWindowOcclusion(window)
+            }
+            .store(in: &cancellables)
+
+        NotificationCenter.default.publisher(for: NSWindow.didMiniaturizeNotification)
+            .sink { [weak self] _ in
+                self?.setEcoRendering(enabled: false, reason: "Pencere simge durumuna küçültüldü")
+            }
+            .store(in: &cancellables)
+
+        NotificationCenter.default.publisher(for: NSWindow.didDeminiaturizeNotification)
+            .sink { [weak self] _ in
+                self?.setEcoRendering(enabled: true, reason: "Pencere geri açıldı")
+            }
+            .store(in: &cancellables)
+    }
+
+    private func handleWindowOcclusion(_ window: NSWindow) {
+        guard backgroundEcoModeEnabled else { return }
+        let isVisible = window.occlusionState.contains(.visible)
+        setEcoRendering(enabled: isVisible, reason: isVisible ? "Pencere görünür oldu" : "Pencere tamamen gizlendi/arkada kaldı")
+    }
+
+    public func setEcoRendering(enabled: Bool, reason: String) {
+        guard backgroundEcoModeEnabled else { return }
+        guard isVideoRenderingActive != enabled else { return }
+        isVideoRenderingActive = enabled
+        controller.setVideoRenderingEnabled(enabled)
+        AppLogger.shared.info(category: .system, "[Arka Plan Eko Modu] \(reason). Video render: \(enabled ? "Açık" : "Kapalı (GPU tasarrufu)")")
+    }
+
+    public func applyStreamQuality(_ quality: StreamQuality) {
+        AppLogger.shared.info(category: .player, "Yayın kalitesi değiştiriliyor: \(quality.rawValue)")
+        if let bitrate = quality.maxBitrate {
+            controller.executeUserCommand("set hls-bitrate \(bitrate)")
         }
     }
 

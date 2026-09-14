@@ -309,6 +309,54 @@ final class KiclientTests: XCTestCase {
             XCTFail("Beklenmeyen hata: \(error)")
         }
     }
+
+    // MARK: - Faz 5 & Faz 6 & Dev Console Tests
+
+    func testAppLoggerCapacityAndLevels() {
+        let logger = AppLogger(maxEntries: 5)
+        logger.clear()
+
+        for i in 1...10 {
+            logger.info(category: .player, "Log entry \(i)")
+        }
+
+        XCTAssertEqual(logger.entries.count, 5, "Maksimum log limiti 5 ile sınırlandırılmalıdır.")
+        XCTAssertEqual(logger.entries.last?.message, "Log entry 10")
+        XCTAssertEqual(logger.entries.first?.message, "Log entry 6")
+
+        logger.clear()
+        XCTAssertTrue(logger.entries.isEmpty, "clear() çağrısı tüm logları temizlemelidir.")
+    }
+
+    func testAppLoggerLiveMetrics() {
+        let ram = AppLogger.getMemoryUsageMB()
+        let cpu = AppLogger.getCPUUsagePercentage()
+
+        XCTAssertGreaterThan(ram, 0.0, "Uygulama bellek tüketimi 0'dan büyük olmalıdır.")
+        XCTAssertGreaterThanOrEqual(cpu, 0.0, "CPU tüketimi negatif olamaz.")
+    }
+
+    func testImageCacheManagerSetGetAndRemove() {
+        let cache = ImageCacheManager(totalCostLimitMB: 5, countLimit: 10)
+        let sampleURL = URL(string: "https://files.kick.com/badges/sub.png")!
+        let image = NSImage(size: NSSize(width: 16, height: 16))
+
+        XCTAssertNil(cache.image(for: sampleURL))
+
+        cache.setImage(image, for: sampleURL)
+        XCTAssertNotNil(cache.image(for: sampleURL), "Kaydedilen görsel önbellekten geri okunabilmelidir.")
+
+        cache.removeImage(for: sampleURL)
+        XCTAssertNil(cache.image(for: sampleURL), "Silinen görsel önbellekte bulunmamalıdır.")
+    }
+
+    func testStreamQualityBitrateMappings() {
+        XCTAssertEqual(StreamQuality.auto.maxBitrate, "max")
+        XCTAssertEqual(StreamQuality.q1080p.maxBitrate, "8500000")
+        XCTAssertEqual(StreamQuality.q720p.maxBitrate, "4500000")
+        XCTAssertEqual(StreamQuality.q480p.maxBitrate, "2000000")
+        XCTAssertEqual(StreamQuality.q160p.maxBitrate, "500000")
+    }
 }
 
 // MARK: - Test Doubles
