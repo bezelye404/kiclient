@@ -11,30 +11,19 @@ Watching Kick in a bloated browser tab easily eats 1–2 GB of RAM, spins up you
 **kiclient** is built natively for macOS:
 
 - Streams video with hardware-accelerated **libmpv** + **Apple VideoToolbox**.
-- Sits comfortably around **~100 MB of RAM** and barely touches your CPU.
+- Sits comfortably around **~100 MB of RAM** and barely touches your CPU. (well not yet)
 - Looks and feels like a real Mac app, not a wrapped web page.
 
 ---
 
 ## Highlights
 
-- 📺 **Buttery Smooth Video**: Full hardware decode with zero frame drops and locked audio/video sync.
-- 💬 **Instant Live Chat**: Reads chat directly via WebSocket with zero login needed. Fast, smooth, and capped so it never bogs down.
-- 🔐 **Send Messages Safely**: Log in with your Kick account via OAuth 2.1 (PKCE). Your tokens are encrypted directly inside your macOS Keychain.
-- 🍃 **Smart Eco Mode**: When you hide or minimize the window, video rendering stops (0% GPU) while your audio and chat keep playing in the background.
-- 🎛 **Quality & Sizing Controls**: Pick between Auto, 1080p60, 720p, etc., and scale the chat text size to your liking.
-- 🛠 **Dev Console (`⌘D`)**: Live RAM & CPU monitors, log stream, and an interactive mpv prompt for anyone who likes to tinker.
-
----
-
-## Shortcuts
-
-| Key | Action |
-| --- | --- |
-| `Space` | Play / Pause |
-| `⌘D` | Toggle Dev Console |
-| `⌘,` | Settings |
-| `⌘⌥C` | Toggle Chat Panel |
+- **Buttery Smooth Video**: Full hardware decode with zero frame drops and locked audio/video sync.
+- **Instant Live Chat**: Reads chat directly via WebSocket with zero login needed. Fast, smooth, and capped so it never bogs down.
+- **Send Messages Safely**: Log in with your Kick account via OAuth 2.1 (PKCE). Your tokens are encrypted directly inside your macOS Keychain.
+- **Smart Eco Mode**: When you hide or minimize the window, video rendering stops (0% GPU) while your audio and chat keep playing in the background.
+- **Quality & Sizing Controls**: Pick between Auto, 1080p60, 720p, etc., and scale the chat text size to your liking.
+- **Dev Console (`⌘D`)**: Live RAM & CPU monitors, log stream, and an interactive mpv prompt for anyone who likes to tinker.
 
 ---
 
@@ -54,10 +43,6 @@ brew install mpv xcodegen
 git clone <repo-url>
 cd kiclient
 xcodegen generate
-open kiclient.xcodeproj
-```
-
-Hit `⌘R` in Xcode to run, or run the test suite from your terminal:
 
 ```bash
 DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer xcodebuild test -project kiclient.xcodeproj -scheme kiclient -destination 'platform=macOS,arch=arm64'
