@@ -41,8 +41,8 @@ public struct DevConsoleView: View {
     public var body: some View {
         VStack(spacing: 0) {
             // Üst Durum ve Başlık Çubuğu
-            HStack(spacing: 12) {
-                HStack(spacing: 6) {
+            HStack(spacing: DesignTokens.Spacing.md) {
+                HStack(spacing: DesignTokens.Spacing.xs) {
                     Image(systemName: "terminal.fill")
                         .foregroundColor(.green)
                     Text("Geliştirici Konsolu")
@@ -52,7 +52,7 @@ public struct DevConsoleView: View {
                 Spacer()
 
                 // Canlı Donanım Metrikleri Rozetleri
-                HStack(spacing: 8) {
+                HStack(spacing: DesignTokens.Spacing.sm) {
                     metricBadge(title: "RAM", value: String(format: "%.1f MB", currentRAMMB), color: currentRAMMB > 400 ? .orange : .green)
                     metricBadge(title: "CPU", value: String(format: "%.1f%%", currentCPUPercent), color: currentCPUPercent > 20 ? .orange : .blue)
                     metricBadge(title: "Decode", value: "VideoToolbox", color: .purple)
@@ -83,14 +83,14 @@ public struct DevConsoleView: View {
                 }
                 .buttonStyle(BorderlessButtonStyle())
             }
-            .padding(.horizontal, 14)
-            .padding(.vertical, 8)
+            .padding(.horizontal, DesignTokens.Spacing.lg)
+            .padding(.vertical, DesignTokens.Spacing.sm)
             .background(Color(NSColor.controlBackgroundColor))
 
             Divider()
 
             // Filtre Çubuğu
-            HStack(spacing: 8) {
+            HStack(spacing: DesignTokens.Spacing.sm) {
                 Picker("Kategori:", selection: $selectedCategory) {
                     Text("TÜMÜ").tag("TÜMÜ")
                     ForEach(LogCategory.allCases, id: \.self) { cat in
@@ -111,7 +111,7 @@ public struct DevConsoleView: View {
                 .controlSize(.small)
                 .frame(width: 105)
 
-                HStack(spacing: 4) {
+                HStack(spacing: DesignTokens.Spacing.xs) {
                     Image(systemName: "magnifyingglass")
                         .foregroundColor(.secondary)
                         .font(.system(size: 11))
@@ -119,20 +119,20 @@ public struct DevConsoleView: View {
                         .textFieldStyle(PlainTextFieldStyle())
                         .font(.system(size: 11))
                 }
-                .padding(.horizontal, 8)
+                .padding(.horizontal, DesignTokens.Spacing.sm)
                 .padding(.vertical, 4)
                 .background(Color(NSColor.textBackgroundColor))
-                .clipShape(RoundedRectangle(cornerRadius: 6))
+                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.CornerRadius.small))
                 .overlay(
-                    RoundedRectangle(cornerRadius: 6)
-                        .stroke(Color.primary.opacity(0.1), lineWidth: 1)
+                    RoundedRectangle(cornerRadius: DesignTokens.CornerRadius.small)
+                        .stroke(DesignTokens.Colors.separator, lineWidth: 1)
                 )
 
                 Toggle("Oto-Kaydır", isOn: $autoScroll)
                     .toggleStyle(CheckboxToggleStyle())
                     .font(.caption2)
             }
-            .padding(.horizontal, 14)
+            .padding(.horizontal, DesignTokens.Spacing.lg)
             .padding(.vertical, 5)
             .background(Color(NSColor.windowBackgroundColor))
 
@@ -187,17 +187,17 @@ public struct DevConsoleView: View {
                         .foregroundColor(.cyan)
                     Spacer()
                 }
-                .padding(.horizontal, 12)
+                .padding(.horizontal, DesignTokens.Spacing.md)
                 .padding(.vertical, 4)
                 .background(Color(NSColor.controlBackgroundColor))
                 Divider()
             }
 
             // Alt mpv İnteraktif Komut Girişi
-            HStack(spacing: 8) {
+            HStack(spacing: DesignTokens.Spacing.sm) {
                 Text(">")
                     .font(.system(size: 13, weight: .bold, design: .monospaced))
-                    .foregroundColor(.green)
+                    .foregroundColor(DesignTokens.Colors.connected)
 
                 TextField("mpv komutu girin (örn: set volume 70, get_property time-pos, show-text 'Test')", text: $commandInput)
                     .textFieldStyle(PlainTextFieldStyle())
@@ -213,8 +213,8 @@ public struct DevConsoleView: View {
                 .font(.caption)
                 .disabled(commandInput.trimmingCharacters(in: .whitespaces).isEmpty || mpvController == nil)
             }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 8)
+            .padding(.horizontal, DesignTokens.Spacing.md)
+            .padding(.vertical, DesignTokens.Spacing.sm)
             .background(Color(NSColor.windowBackgroundColor))
         }
         .frame(minHeight: 180, idealHeight: 240, maxHeight: 300)
@@ -262,7 +262,7 @@ public struct DevConsoleView: View {
         .padding(.horizontal, 6)
         .padding(.vertical, 2)
         .background(Color(NSColor.textBackgroundColor))
-        .cornerRadius(4)
+        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.CornerRadius.small))
     }
 
     private func levelColor(_ level: LogLevel) -> Color {

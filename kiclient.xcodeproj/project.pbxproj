@@ -11,6 +11,7 @@
 		0C3BFBCD6CB1FFFDE7D37C51 /* KickChatSender.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1106EB36DBB4C06C1400706D /* KickChatSender.swift */; };
 		197E4B70DFCE93D140ED3C54 /* PlayerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED3DC79FE09FA23AC578FF7 /* PlayerViewModel.swift */; };
 		1AF965A33B8B17A7D0892FE3 /* ChatViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3983B80B56E01F8416A8F145 /* ChatViewModel.swift */; };
+		1DF6E5CCB4BE5A7A15E6BE1A /* DesignTokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89FC229B19FF8E2737A80341 /* DesignTokens.swift */; };
 		1FA3450542CB6BB2D21D96A2 /* MainWindowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9448488FEB0F7AB8F453E6FC /* MainWindowView.swift */; };
 		214B1467266FBEFBBA3FF429 /* KiclientApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F417379AF99C16DD8025B162 /* KiclientApp.swift */; };
 		39A1F7FCFF9E37D2B1B80635 /* MPVMetalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F25EFB2ABF9631B629B08EE8 /* MPVMetalView.swift */; };
@@ -50,6 +51,7 @@
 		6290FC2C32C5BF069BCEDAA2 /* ChatListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatListView.swift; sourceTree = "<group>"; };
 		6533F118AD572AC6EEE6F586 /* kiclient.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = kiclient.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		787872DAAC5D211B94F491A2 /* ChatInputBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatInputBarView.swift; sourceTree = "<group>"; };
+		89FC229B19FF8E2737A80341 /* DesignTokens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignTokens.swift; sourceTree = "<group>"; };
 		93E5E4D971494B7C9C8962E2 /* AppLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLogger.swift; sourceTree = "<group>"; };
 		9448488FEB0F7AB8F453E6FC /* MainWindowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainWindowView.swift; sourceTree = "<group>"; };
 		C3AF1A1CDDB11957A2FE127B /* ChatMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessage.swift; sourceTree = "<group>"; };
@@ -76,6 +78,7 @@
 			children = (
 				787872DAAC5D211B94F491A2 /* ChatInputBarView.swift */,
 				6290FC2C32C5BF069BCEDAA2 /* ChatListView.swift */,
+				89FC229B19FF8E2737A80341 /* DesignTokens.swift */,
 				1C42D19D14CAA7414EEA53EB /* DevConsoleView.swift */,
 				9448488FEB0F7AB8F453E6FC /* MainWindowView.swift */,
 				3AD72C7D615538D4D6528FE1 /* SettingsView.swift */,
@@ -258,6 +261,7 @@
 				4971DC1786AC7C8A59732A20 /* ChatListView.swift in Sources */,
 				F96A6BA05E59287A0E3CBCA1 /* ChatMessage.swift in Sources */,
 				1AF965A33B8B17A7D0892FE3 /* ChatViewModel.swift in Sources */,
+				1DF6E5CCB4BE5A7A15E6BE1A /* DesignTokens.swift in Sources */,
 				DB8313B3746F6AB544033B15 /* DevConsoleView.swift in Sources */,
 				BCD77B697C583D6AE5ABDA95 /* ImageCacheManager.swift in Sources */,
 				589B66A7397E87D8BF192E24 /* KickAuthManager.swift in Sources */,

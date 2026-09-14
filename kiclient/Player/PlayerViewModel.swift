@@ -80,6 +80,7 @@ public final class PlayerViewModel: ObservableObject {
     private func setupOcclusionObservers() {
         NotificationCenter.default.publisher(for: NSWindow.didChangeOcclusionStateNotification)
             .compactMap { $0.object as? NSWindow }
+            .debounce(for: .milliseconds(500), scheduler: DispatchQueue.main)
             .sink { [weak self] window in
                 self?.handleWindowOcclusion(window)
             }

@@ -28,7 +28,7 @@ public struct MPVConfiguration: Equatable, Sendable {
         cache: "yes",
         demuxerMaxBytes: "33554432",      // 32 MiB
         demuxerMaxBackBytes: "16777216",  // 16 MiB
-        videoSync: "display-resample",
+        videoSync: "audio",
         frameDrop: "vo",
         profile: "low-latency"
     )
@@ -43,6 +43,10 @@ public struct MPVConfiguration: Equatable, Sendable {
             "video-sync": videoSync,
             "framedrop": frameDrop,
             "profile": profile,
+            "audio-pitch-correction": "yes",
+            "audio-buffer": "0.2",
+            "correct-pts": "yes",
+            "hr-seek": "no",
             "input-default-bindings": "no",
             "input-vo-keyboard": "no"
         ]
@@ -194,8 +198,10 @@ public final class MPVController: MPVControlling {
         }
     }
 
+    public private(set) var isVideoRenderingActive: Bool = true
+
     public func renderFrame(in ctx: CGLContextObj, bounds: CGRect) {
-        guard let rCtx = renderContext else {
+        guard let rCtx = renderContext, isVideoRenderingActive else {
             glClearColor(0, 0, 0, 1)
             glClear(GLbitfield(GL_COLOR_BUFFER_BIT))
             return
@@ -363,10 +369,11 @@ public final class MPVController: MPVControlling {
     }
 
     public func setVideoRenderingEnabled(_ enabled: Bool) {
-        guard let handle = mpv else { return }
-        let vidVal = enabled ? "auto" : "no"
-        mpv_set_property_string(handle, "vid", vidVal)
-        AppLogger.shared.info(category: .player, "Video render modu: \(vidVal)")
+        isVideoRenderingActive = enabled
+        if !enabled {
+            attachedLayer?.setNeedsDisplay()
+        }
+        AppLogger.shared.info(category: .player, "Video katman çizimi: \(enabled ? "Aktif" : "Pasif (GPU Tasarrufu)")")
     }
 
     public func getPropertyString(_ name: String) -> String? {

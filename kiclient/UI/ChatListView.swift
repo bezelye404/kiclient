@@ -95,7 +95,8 @@ public struct ChatListView: NSViewRepresentable {
             guard row < displayedMessages.count else { return 24 }
             let message = displayedMessages[row]
             let colWidth = tableView.tableColumns.first?.width ?? tableView.bounds.width
-            let contentWidth = max(colWidth - 24, 100)
+            let horizontalPadding = DesignTokens.Spacing.lg * 2
+            let contentWidth = max(colWidth - horizontalPadding, 100)
 
             let attrStr = makeAttributedString(for: message)
             let rect = attrStr.boundingRect(
@@ -124,10 +125,10 @@ public struct ChatListView: NSViewRepresentable {
 
                 if let cell = cell {
                     NSLayoutConstraint.activate([
-                        textField.leadingAnchor.constraint(equalTo: cell.leadingAnchor, constant: 10),
-                        textField.trailingAnchor.constraint(equalTo: cell.trailingAnchor, constant: -10),
-                        textField.topAnchor.constraint(equalTo: cell.topAnchor, constant: 3),
-                        textField.bottomAnchor.constraint(equalTo: cell.bottomAnchor, constant: -3)
+                        textField.leadingAnchor.constraint(equalTo: cell.leadingAnchor, constant: DesignTokens.Spacing.lg),
+                        textField.trailingAnchor.constraint(equalTo: cell.trailingAnchor, constant: -DesignTokens.Spacing.lg),
+                        textField.topAnchor.constraint(equalTo: cell.topAnchor, constant: 4),
+                        textField.bottomAnchor.constraint(equalTo: cell.bottomAnchor, constant: -4)
                     ])
                 }
             }

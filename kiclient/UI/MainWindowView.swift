@@ -21,7 +21,7 @@ public struct MainWindowView: View {
 
     public var body: some View {
         VStack(spacing: 0) {
-            // Ana Sahne: Sol Video, Sağ Sohbet Tablosu
+            // Ana Sahne: Sol Video, Sağ Sohbet Paneli
             HSplitView {
                 // Sol: Video Sahnesi
                 VStack(spacing: 0) {
@@ -30,25 +30,38 @@ public struct MainWindowView: View {
 
                         MPVMetalView(controller: playerVM.controller)
 
+                        // Boş Durum (Empty State - Henüz yayın seçilmemiş)
+                        if playerVM.currentURL.isEmpty && playerVM.channelNotice == nil {
+                            VStack(spacing: DesignTokens.Spacing.sm) {
+                                Image(systemName: "tv")
+                                    .font(.system(size: 42))
+                                    .foregroundColor(.secondary.opacity(0.6))
+                                    .imageScale(.large)
+                                Text("Yayın izlemek için yukarıdan bir kanal girin")
+                                    .font(.callout)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+
                         // Yükleniyor Göstergesi
                         if case .loading = playerVM.state {
-                            VStack(spacing: 10) {
+                            VStack(spacing: DesignTokens.Spacing.md) {
                                 ProgressView()
-                                    .scaleEffect(1.1)
+                                    .controlSize(.regular)
                                 Text("Yayın yükleniyor...")
                                     .font(.subheadline)
                                     .foregroundColor(.white.opacity(0.85))
                             }
-                            .padding(20)
+                            .padding(DesignTokens.Spacing.lg)
                             .background(.ultraThinMaterial)
-                            .cornerRadius(12)
+                            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.CornerRadius.card))
                         }
 
                         // Kanal Bildirimi (Offline veya Hata)
                         if let notice = playerVM.channelNotice {
-                            VStack(spacing: 12) {
-                                Image(systemName: "tv.slash.fill")
-                                    .font(.system(size: 40))
+                            VStack(spacing: DesignTokens.Spacing.md) {
+                                Image(systemName: "tv.slash")
+                                    .font(.system(size: 36))
                                     .foregroundColor(.secondary)
                                 Text(notice)
                                     .font(.headline)
@@ -57,15 +70,15 @@ public struct MainWindowView: View {
                                 Button("Yeniden Dene") {
                                     triggerLoadChannel()
                                 }
-                                .buttonStyle(BorderedProminentButtonStyle())
-                                .controlSize(.small)
+                                .buttonStyle(.borderedProminent)
+                                .controlSize(.regular)
                             }
-                            .padding(24)
-                            .background(Color.black.opacity(0.82))
-                            .cornerRadius(14)
+                            .padding(DesignTokens.Spacing.xl)
+                            .background(Color.black.opacity(0.75))
+                            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.CornerRadius.large))
                             .overlay(
-                                RoundedRectangle(cornerRadius: 14)
-                                    .stroke(Color.white.opacity(0.12), lineWidth: 1)
+                                RoundedRectangle(cornerRadius: DesignTokens.CornerRadius.large)
+                                    .strokeBorder(Color.white.opacity(0.12), lineWidth: 1)
                             )
                         }
                     }
@@ -73,47 +86,49 @@ public struct MainWindowView: View {
 
                     Divider()
 
-                    // Alt Şık Oynatma Kontrolleri
-                    HStack(spacing: 14) {
+                    // Alt Kontrol Çubuğu (Apple HIG uyumlu dikey baseline hizalama ve 8pt marginler)
+                    HStack(spacing: DesignTokens.Spacing.md) {
                         Button(action: {
                             playerVM.togglePlayPause()
                         }) {
                             Image(systemName: playerVM.state == .playing ? "pause.fill" : "play.fill")
-                                .font(.system(size: 13, weight: .bold))
+                                .imageScale(.medium)
                         }
-                        .buttonStyle(PlainButtonStyle())
+                        .buttonStyle(.plain)
                         .disabled(playerVM.currentURL.isEmpty)
-                        .help(playerVM.state == .playing ? "Duraklat" : "Oynat")
+                        .accessibilityLabel(playerVM.state == .playing ? "Duraklat" : "Oynat")
 
                         Button(action: {
                             playerVM.stop()
                         }) {
                             Image(systemName: "stop.fill")
-                                .font(.system(size: 11, weight: .bold))
+                                .imageScale(.medium)
                         }
-                        .buttonStyle(PlainButtonStyle())
+                        .buttonStyle(.plain)
                         .disabled(playerVM.state == .idle || playerVM.state == .stopped)
-                        .help("Durdur")
+                        .accessibilityLabel("Durdur")
 
                         Divider().frame(height: 14)
 
                         // Ses Kontrolü
-                        HStack(spacing: 6) {
+                        HStack(spacing: DesignTokens.Spacing.sm) {
                             Button(action: {
                                 playerVM.toggleMute()
                             }) {
                                 Image(systemName: playerVM.isMuted ? "speaker.slash.fill" : (playerVM.volume < 30 ? "speaker.1.fill" : "speaker.wave.2.fill"))
-                                    .font(.system(size: 12))
-                                    .foregroundColor(playerVM.isMuted ? .red : .primary)
+                                    .imageScale(.medium)
+                                    .foregroundColor(playerVM.isMuted ? .secondary : .primary)
                             }
-                            .buttonStyle(PlainButtonStyle())
+                            .buttonStyle(.plain)
+                            .accessibilityLabel("Sessize Al")
 
                             Slider(value: $playerVM.volume, in: 0...100)
-                                .frame(width: 75)
+                                .frame(width: 80)
                                 .controlSize(.small)
+                                .accessibilityLabel("Ses Seviyesi")
                         }
 
-                        // Kalite Seçici Menüsü (Modern Rozet)
+                        // Kalite Seçici Menüsü (Native HIG Menu)
                         Menu {
                             ForEach(StreamQuality.allCases) { q in
                                 Button(action: {
@@ -128,59 +143,57 @@ public struct MainWindowView: View {
                                 }
                             }
                         } label: {
-                            HStack(spacing: 4) {
+                            HStack(spacing: DesignTokens.Spacing.xs) {
                                 Image(systemName: "slider.horizontal.3")
-                                    .font(.system(size: 9))
+                                    .imageScale(.small)
                                 Text(playerVM.selectedQuality.rawValue)
-                                    .font(.system(size: 11, weight: .bold, design: .rounded))
+                                    .font(.caption.weight(.medium))
                             }
-                            .padding(.horizontal, 7)
-                            .padding(.vertical, 3)
-                            .background(Color(NSColor.controlBackgroundColor))
-                            .clipShape(RoundedRectangle(cornerRadius: 5))
                         }
-                        .menuStyle(BorderlessButtonMenuStyle())
+                        .menuStyle(.borderlessButton)
                         .fixedSize()
+                        .accessibilityLabel("Yayın Kalitesi")
 
                         Spacer()
 
-                        statusBadge(for: playerVM.state)
+                        // Sakin Durum Göstergesi
+                        statusIndicator(for: playerVM.state)
 
                         if playerVM.timePosition > 0 {
                             Text(formatTime(playerVM.timePosition))
-                                .font(.system(size: 11, weight: .medium, design: .monospaced))
+                                .font(.caption)
                                 .foregroundColor(.secondary)
                         }
                     }
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 8)
-                    .background(Color(NSColor.windowBackgroundColor))
+                    .padding(.horizontal, DesignTokens.Spacing.lg)
+                    .padding(.vertical, DesignTokens.Spacing.md)
+                    .background(.regularMaterial)
                 }
                 .layoutPriority(1)
                 .frame(minWidth: 480, maxWidth: .infinity, maxHeight: .infinity)
 
-                // Sağ: Sohbet Paneli (NSTableView Tabanlı)
+                // Sağ: Sohbet Paneli (Belirgin Divider ile Ayrılmış)
                 if showChatSidebar {
                     VStack(spacing: 0) {
-                        // Sohbet Başlığı
-                        HStack(spacing: 8) {
-                            Text("CANLI SOHBET")
-                                .font(.system(size: 11, weight: .bold, design: .rounded))
+                        // Sohbet Başlığı (HIG: .headline + .secondary, sakin gösterge)
+                        HStack(spacing: DesignTokens.Spacing.sm) {
+                            Text("Canlı Sohbet")
+                                .font(.headline)
                                 .foregroundColor(.secondary)
 
                             Spacer()
 
                             socketStatusBadge(chatVM.socketState)
                         }
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 9)
-                        .background(Color(NSColor.controlBackgroundColor))
+                        .padding(.horizontal, DesignTokens.Spacing.lg)
+                        .padding(.vertical, DesignTokens.Spacing.md)
+                        .background(.regularMaterial)
 
                         Divider()
 
                         // Yüksek Hızlı NSTableView Sohbet Listesi
                         ChatListView(viewModel: chatVM, fontSize: CGFloat(chatFontSize))
-                            .background(Color(NSColor.textBackgroundColor))
+                            .background(Color(nsColor: .textBackgroundColor))
 
                         Divider()
 
@@ -194,10 +207,10 @@ public struct MainWindowView: View {
                             }
                         )
                     }
-                    .frame(minWidth: 260, idealWidth: 320, maxWidth: 450)
+                    .frame(minWidth: 280, idealWidth: 320, maxWidth: 450)
                 }
             }
-            .frame(minWidth: 780, minHeight: 480)
+            .frame(minWidth: 800, minHeight: 480)
 
             // Alt Geliştirici Konsolu Paneli (Açıksa Çekmece Olarak Açılır)
             if showDevConsole {
@@ -212,99 +225,90 @@ public struct MainWindowView: View {
         }
         .toolbar {
             ToolbarItemGroup(placement: .navigation) {
-                HStack(spacing: 8) {
-                    Image(systemName: "play.tv.fill")
-                        .foregroundColor(.green)
-                        .font(.system(size: 14, weight: .bold))
+                HStack(spacing: DesignTokens.Spacing.sm) {
+                    Image(systemName: "tv")
+                        .foregroundColor(.accentColor)
+                        .imageScale(.medium)
+                        .symbolRenderingMode(.hierarchical)
 
-                    HStack(spacing: 2) {
-                        Text("kick.com/")
-                            .foregroundColor(.secondary)
-                            .font(.system(size: 12, weight: .medium, design: .monospaced))
-
-                        TextField("kanal", text: $channelInput)
-                            .textFieldStyle(PlainTextFieldStyle())
-                            .font(.system(size: 12, weight: .medium, design: .monospaced))
-                            .frame(width: 110)
-                            .onSubmit {
-                                triggerLoadChannel()
-                            }
-                    }
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(Color(NSColor.controlBackgroundColor))
-                    .clipShape(RoundedRectangle(cornerRadius: 6))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 6)
-                            .stroke(Color.primary.opacity(0.12), lineWidth: 1)
-                    )
+                    // Standart Sistem Fontu Arama Alanı (Monospace/Terminal görünümü kaldırıldı)
+                    TextField("Kanal adı girin...", text: $channelInput)
+                        .textFieldStyle(.roundedBorder)
+                        .font(.body)
+                        .frame(width: 140)
+                        .onSubmit {
+                            triggerLoadChannel()
+                        }
 
                     Button(action: {
                         triggerLoadChannel()
                     }) {
                         if playerVM.isLoadingChannel {
                             ProgressView()
-                                .scaleEffect(0.6)
-                                .frame(width: 14, height: 14)
+                                .controlSize(.small)
                         } else {
                             Image(systemName: "arrow.right.circle.fill")
                                 .foregroundColor(.accentColor)
-                                .font(.system(size: 15))
+                                .imageScale(.medium)
                         }
                     }
-                    .buttonStyle(PlainButtonStyle())
+                    .buttonStyle(.plain)
                     .disabled(playerVM.isLoadingChannel || channelInput.trimmingCharacters(in: .whitespaces).isEmpty)
-                    .help("Kanalı Yükle [Enter]")
+                    .accessibilityLabel("Kanalı Yükle")
                 }
             }
 
             ToolbarItemGroup(placement: .principal) {
                 if let info = playerVM.currentChannelInfo {
                     if info.isLive {
-                        HStack(spacing: 8) {
-                            HStack(spacing: 5) {
+                        HStack(spacing: DesignTokens.Spacing.sm) {
+                            // Sakin CANLI Rozeti (İnce kontur + sakin kırmızı nokta)
+                            HStack(spacing: DesignTokens.Spacing.xs) {
                                 Circle()
-                                    .fill(Color.red)
-                                    .frame(width: 7, height: 7)
+                                    .fill(DesignTokens.Colors.liveIndicator)
+                                    .frame(width: 6, height: 6)
                                 Text("CANLI")
-                                    .font(.system(size: 10, weight: .black))
+                                    .font(.caption2.weight(.bold))
                                     .foregroundColor(.red)
                             }
                             .padding(.horizontal, 6)
-                            .padding(.vertical, 2)
-                            .background(Color.red.opacity(0.12))
-                            .clipShape(Capsule())
+                            .padding(.vertical, 3)
+                            .overlay(
+                                Capsule()
+                                    .strokeBorder(DesignTokens.Colors.separator, lineWidth: 1)
+                            )
 
                             if let viewers = info.viewerCount {
-                                HStack(spacing: 3) {
-                                    Image(systemName: "person.2.fill")
-                                        .font(.system(size: 10))
-                                    Text(formatViewers(viewers))
-                                        .font(.system(size: 11, weight: .semibold, design: .monospaced))
-                                }
-                                .foregroundColor(.secondary)
+                                Text("👁 \(formatViewers(viewers))")
+                                    .font(.caption.weight(.medium))
+                                    .foregroundColor(.secondary)
                             }
 
                             if let title = info.streamTitle, !title.isEmpty {
                                 Text(title)
-                                    .font(.system(size: 12, weight: .medium))
+                                    .font(.caption)
                                     .foregroundColor(.primary)
                                     .lineLimit(1)
-                                    .frame(maxWidth: 260)
+                                    .textCase(nil)
+                                    .frame(maxWidth: 240)
                             }
                         }
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 3)
+                        .background(.ultraThinMaterial)
+                        .clipShape(Capsule())
                     } else {
-                        HStack(spacing: 5) {
+                        HStack(spacing: DesignTokens.Spacing.xs) {
                             Circle()
-                                .fill(Color.gray)
+                                .fill(Color.secondary)
                                 .frame(width: 6, height: 6)
-                            Text("ÇEVRİMDIŞI")
-                                .font(.system(size: 10, weight: .bold))
+                            Text("Çevrimdışı")
+                                .font(.caption.weight(.medium))
                                 .foregroundColor(.secondary)
                         }
-                        .padding(.horizontal, 7)
-                        .padding(.vertical, 2)
-                        .background(Color.secondary.opacity(0.1))
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 3)
+                        .background(.ultraThinMaterial)
                         .clipShape(Capsule())
                     }
                 }
@@ -316,21 +320,23 @@ public struct MainWindowView: View {
                     showDirectURLEntry.toggle()
                 }) {
                     Image(systemName: "link")
+                        .imageScale(.medium)
+                        .symbolRenderingMode(.hierarchical)
                 }
-                .help("Özel .m3u8 HLS URL'si Gir")
+                .accessibilityLabel("Özel HLS URL'si Gir")
                 .popover(isPresented: $showDirectURLEntry) {
-                    VStack(alignment: .leading, spacing: 10) {
+                    VStack(alignment: .leading, spacing: DesignTokens.Spacing.md) {
                         Text("Doğrudan Akış URL'si")
-                            .font(.caption.bold())
+                            .font(.headline)
                         HStack {
                             TextField("https://.../master.m3u8", text: $directURLInput)
-                                .textFieldStyle(RoundedBorderTextFieldStyle())
+                                .textFieldStyle(.roundedBorder)
                                 .frame(width: 280)
                             Button("Oynat") {
                                 playerVM.load(url: directURLInput)
                                 showDirectURLEntry = false
                             }
-                            .buttonStyle(BorderedProminentButtonStyle())
+                            .buttonStyle(.borderedProminent)
                         }
                         Button("Mux Test Akışı Yükle") {
                             directURLInput = "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
@@ -338,9 +344,9 @@ public struct MainWindowView: View {
                             showDirectURLEntry = false
                         }
                         .font(.caption)
-                        .buttonStyle(LinkButtonStyle())
+                        .buttonStyle(.link)
                     }
-                    .padding(14)
+                    .padding(DesignTokens.Spacing.lg)
                 }
 
                 // Geliştirici Konsolu Düğmesi
@@ -349,10 +355,12 @@ public struct MainWindowView: View {
                         showDevConsole.toggle()
                     }
                 }) {
-                    Image(systemName: showDevConsole ? "terminal.fill" : "terminal")
-                        .foregroundColor(showDevConsole ? .green : .primary)
+                    Image(systemName: "terminal")
+                        .imageScale(.medium)
+                        .symbolRenderingMode(.hierarchical)
+                        .foregroundColor(showDevConsole ? .accentColor : .primary)
                 }
-                .help("Geliştirici Konsolu (Dev Console) [⌘D]")
+                .accessibilityLabel("Geliştirici Konsolu")
                 .keyboardShortcut("d", modifiers: [.command])
 
                 // Ayarlar Düğmesi
@@ -360,8 +368,10 @@ public struct MainWindowView: View {
                     showSettingsSheet = true
                 }) {
                     Image(systemName: "gearshape")
+                        .imageScale(.medium)
+                        .symbolRenderingMode(.hierarchical)
                 }
-                .help("Ayarlar (Kick OAuth, Kalite & Performans) [⌘,]")
+                .accessibilityLabel("Ayarlar")
                 .keyboardShortcut(",", modifiers: [.command])
 
                 // Sohbet Göster/Gizle Butonu
@@ -370,10 +380,12 @@ public struct MainWindowView: View {
                         showChatSidebar.toggle()
                     }
                 }) {
-                    Image(systemName: showChatSidebar ? "sidebar.right" : "bubble.left.and.bubble.right")
+                    Image(systemName: "sidebar.trailing")
+                        .imageScale(.medium)
+                        .symbolRenderingMode(.hierarchical)
                         .foregroundColor(showChatSidebar ? .accentColor : .secondary)
                 }
-                .help("Sohbeti Göster / Gizle [⌘⌥C]")
+                .accessibilityLabel("Sohbeti Göster veya Gizle")
                 .keyboardShortcut("c", modifiers: [.command, .option])
             }
         }
@@ -400,31 +412,31 @@ public struct MainWindowView: View {
     }
 
     @ViewBuilder
-    private func statusBadge(for state: MPVPlaybackState) -> some View {
+    private func statusIndicator(for state: MPVPlaybackState) -> some View {
         switch state {
         case .idle:
             Text("Hazır").font(.caption).foregroundColor(.secondary)
         case .loading:
-            HStack(spacing: 4) {
-                ProgressView().scaleEffect(0.4).frame(width: 8, height: 8)
-                Text("Yükleniyor...").font(.caption).foregroundColor(.orange)
+            HStack(spacing: DesignTokens.Spacing.xs) {
+                ProgressView().controlSize(.mini)
+                Text("Yükleniyor...").font(.caption).foregroundColor(.secondary)
             }
         case .playing:
-            HStack(spacing: 4) {
-                Circle().fill(Color.green).frame(width: 6, height: 6)
-                Text("Oynatılıyor").font(.caption.bold()).foregroundColor(.green)
+            HStack(spacing: DesignTokens.Spacing.xs) {
+                Circle().fill(DesignTokens.Colors.connected).frame(width: 6, height: 6)
+                Text("Oynatılıyor").font(.caption).foregroundColor(.secondary)
             }
         case .paused:
-            HStack(spacing: 4) {
-                Circle().fill(Color.yellow).frame(width: 6, height: 6)
-                Text("Duraklatıldı").font(.caption).foregroundColor(.yellow)
+            HStack(spacing: DesignTokens.Spacing.xs) {
+                Circle().fill(DesignTokens.Colors.warning).frame(width: 6, height: 6)
+                Text("Duraklatıldı").font(.caption).foregroundColor(.secondary)
             }
         case .stopped:
             Text("Durduruldu").font(.caption).foregroundColor(.secondary)
         case .error(let msg):
-            HStack(spacing: 4) {
-                Image(systemName: "exclamationmark.triangle.fill").foregroundColor(.red).font(.caption2)
-                Text(msg).font(.caption).foregroundColor(.red).lineLimit(1)
+            HStack(spacing: DesignTokens.Spacing.xs) {
+                Image(systemName: "exclamationmark.circle").foregroundColor(DesignTokens.Colors.error).font(.caption2)
+                Text(msg).font(.caption).foregroundColor(DesignTokens.Colors.error).lineLimit(1)
             }
         }
     }
@@ -433,24 +445,27 @@ public struct MainWindowView: View {
     private func socketStatusBadge(_ state: ChatSocketState) -> some View {
         switch state {
         case .disconnected:
-            Text("Bağlı Değil").font(.caption2).foregroundColor(.secondary)
+            HStack(spacing: DesignTokens.Spacing.xs) {
+                Circle().fill(Color.secondary).frame(width: 6, height: 6)
+                Text("Bağlı Değil").font(.caption2).foregroundColor(.secondary)
+            }
         case .connecting:
-            HStack(spacing: 3) {
-                ProgressView().scaleEffect(0.4).frame(width: 8, height: 8)
-                Text("Bağlanıyor...").font(.caption2).foregroundColor(.orange)
+            HStack(spacing: DesignTokens.Spacing.xs) {
+                ProgressView().controlSize(.mini)
+                Text("Bağlanıyor...").font(.caption2).foregroundColor(.secondary)
             }
         case .connected:
-            HStack(spacing: 4) {
-                Circle().fill(Color.green).frame(width: 6, height: 6)
-                Text("Bağlandı").font(.caption2).foregroundColor(.green)
+            HStack(spacing: DesignTokens.Spacing.xs) {
+                Circle().fill(DesignTokens.Colors.connected).frame(width: 6, height: 6)
+                Text("Bağlandı").font(.caption2).foregroundColor(.secondary)
             }
         case .reconnecting(let attempt, _):
-            HStack(spacing: 3) {
-                Circle().fill(Color.yellow).frame(width: 6, height: 6)
-                Text("Tekrar (\(attempt))").font(.caption2).foregroundColor(.yellow)
+            HStack(spacing: DesignTokens.Spacing.xs) {
+                Circle().fill(DesignTokens.Colors.warning).frame(width: 6, height: 6)
+                Text("Tekrar (\(attempt))").font(.caption2).foregroundColor(.secondary)
             }
         case .error(let err):
-            Text(err).font(.caption2).foregroundColor(.red).lineLimit(1)
+            Text(err).font(.caption2).foregroundColor(DesignTokens.Colors.error).lineLimit(1)
         }
     }
 

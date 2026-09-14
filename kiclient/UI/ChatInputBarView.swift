@@ -23,13 +23,13 @@ public struct ChatInputBarView: View {
     }
 
     public var body: some View {
-        VStack(spacing: 4) {
+        VStack(spacing: DesignTokens.Spacing.xs) {
             if authManager.isAuthenticated {
-                HStack(spacing: 8) {
-                    HStack(spacing: 6) {
+                HStack(spacing: DesignTokens.Spacing.sm) {
+                    HStack(spacing: DesignTokens.Spacing.xs) {
                         TextField("Bir mesaj gönder...", text: $messageText)
                             .textFieldStyle(PlainTextFieldStyle())
-                            .font(.system(size: 12))
+                            .font(.body)
                             .onSubmit {
                                 triggerSendMessage()
                             }
@@ -39,18 +39,18 @@ public struct ChatInputBarView: View {
                             Button(action: { messageText = "" }) {
                                 Image(systemName: "xmark.circle.fill")
                                     .foregroundColor(.secondary)
-                                    .font(.system(size: 11))
+                                    .font(.caption)
                             }
                             .buttonStyle(PlainButtonStyle())
                         }
                     }
-                    .padding(.horizontal, 10)
+                    .padding(.horizontal, DesignTokens.Spacing.sm)
                     .padding(.vertical, 6)
                     .background(Color(NSColor.textBackgroundColor))
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .clipShape(RoundedRectangle(cornerRadius: DesignTokens.CornerRadius.small))
                     .overlay(
-                        RoundedRectangle(cornerRadius: 8)
-                            .stroke(Color.primary.opacity(0.12), lineWidth: 1)
+                        RoundedRectangle(cornerRadius: DesignTokens.CornerRadius.small)
+                            .stroke(DesignTokens.Colors.separator, lineWidth: 1)
                     )
 
                     Button(action: {
@@ -58,7 +58,7 @@ public struct ChatInputBarView: View {
                     }) {
                         if isSending {
                             ProgressView()
-                                .scaleEffect(0.5)
+                                .scaleEffect(0.6)
                                 .frame(width: 16, height: 16)
                         } else {
                             Image(systemName: "paperplane.fill")
@@ -67,34 +67,47 @@ public struct ChatInputBarView: View {
                     }
                     .buttonStyle(BorderedProminentButtonStyle())
                     .controlSize(.regular)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .clipShape(RoundedRectangle(cornerRadius: DesignTokens.CornerRadius.small))
                     .disabled(isSending || messageText.trimmingCharacters(in: .whitespaces).isEmpty || broadcasterId == nil)
                 }
             } else {
-                Button(action: onOpenSettings) {
-                    HStack(spacing: 6) {
+                // HIG §6.3 Uyumlu Çağrı Kartı (CTA Card)
+                VStack(spacing: DesignTokens.Spacing.sm) {
+                    HStack(spacing: DesignTokens.Spacing.xs) {
                         Image(systemName: "lock.fill")
-                            .font(.system(size: 11))
-                        Text("Sohbete katılmak için giriş yapın")
-                            .font(.system(size: 12, weight: .medium))
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        Text("Sohbete katılmak için hesap bağlayın")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
                     }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 6)
+
+                    Button(action: onOpenSettings) {
+                        Text("Giriş Yap")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.regular)
                 }
-                .buttonStyle(BorderedButtonStyle())
-                .controlSize(.regular)
+                .padding(DesignTokens.Spacing.md)
+                .background(.ultraThinMaterial)
+                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.CornerRadius.card))
+                .overlay(
+                    RoundedRectangle(cornerRadius: DesignTokens.CornerRadius.card)
+                        .stroke(DesignTokens.Colors.separator, lineWidth: 1)
+                )
             }
 
             if let err = sendError {
                 Text(err)
                     .font(.caption2)
-                    .foregroundColor(.red)
+                    .foregroundColor(DesignTokens.Colors.error)
                     .lineLimit(1)
             }
         }
-        .padding(.horizontal, 10)
-        .padding(.vertical, 8)
-        .background(Color(NSColor.controlBackgroundColor))
+        .padding(.horizontal, DesignTokens.Spacing.md)
+        .padding(.vertical, DesignTokens.Spacing.sm)
+        .background(.regularMaterial)
     }
 
     private func triggerSendMessage() {

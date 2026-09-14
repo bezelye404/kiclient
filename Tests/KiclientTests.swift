@@ -19,7 +19,7 @@ final class KiclientTests: XCTestCase {
         // Düşük gecikme profili
         XCTAssertEqual(options["profile"], "low-latency", "Canlı yayın için profil low-latency olmalıdır.")
         XCTAssertEqual(options["cache"], "yes", "Önbellek etkin olmalıdır.")
-        XCTAssertEqual(options["video-sync"], "display-resample", "Video senkronizasyonu display-resample olmalıdır.")
+        XCTAssertEqual(options["video-sync"], "audio", "Video senkronizasyonu canlı yayınlarda A/V kaymasını önlemek için audio olmalıdır.")
         XCTAssertEqual(options["framedrop"], "vo", "Kare atlama vo modunda olmalıdır.")
     }
 
