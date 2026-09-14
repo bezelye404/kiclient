@@ -32,10 +32,14 @@ public struct LogEntry: Identifiable, Equatable, Sendable {
         self.message = message
     }
 
-    public var formattedTime: String {
+    private static let timeFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm:ss.SSS"
-        return formatter.string(from: timestamp)
+        return formatter
+    }()
+
+    public var formattedTime: String {
+        return Self.timeFormatter.string(from: timestamp)
     }
 }
 
@@ -46,7 +50,7 @@ public final class AppLogger: ObservableObject, @unchecked Sendable {
     private let maxEntries: Int
     private let lock = NSLock()
 
-    public init(maxEntries: Int = 500) {
+    public init(maxEntries: Int = 250) {
         self.maxEntries = maxEntries
     }
 

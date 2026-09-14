@@ -12,9 +12,9 @@ final class KiclientTests: XCTestCase {
         // Donanım hızlandırma videotoolbox doğrulaması (ADR / PERFORMANCE kuralı)
         XCTAssertEqual(options["hwdec"], "videotoolbox", "Donanım hızlandırma zorunlu olarak videotoolbox olmalıdır.")
 
-        // Düşük RAM bellek tamponu doğrulaması (32 MiB / 16 MiB)
-        XCTAssertEqual(options["demuxer-max-bytes"], "33554432", "Demuxer max bytes 32 MiB olmalıdır.")
-        XCTAssertEqual(options["demuxer-max-back-bytes"], "16777216", "Demuxer max back bytes 16 MiB olmalıdır.")
+        // Düşük RAM bellek tamponu doğrulaması (20 MiB / 4 MiB)
+        XCTAssertEqual(options["demuxer-max-bytes"], "20971520", "Demuxer max bytes 20 MiB olmalıdır.")
+        XCTAssertEqual(options["demuxer-max-back-bytes"], "4194304", "Demuxer max back bytes 4 MiB olmalıdır.")
 
         // Düşük gecikme profili
         XCTAssertEqual(options["profile"], "low-latency", "Canlı yayın için profil low-latency olmalıdır.")

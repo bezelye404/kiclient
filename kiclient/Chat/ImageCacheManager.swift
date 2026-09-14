@@ -14,10 +14,11 @@ public final class ImageCacheManager: ImageCaching, @unchecked Sendable {
 
     private let cache = NSCache<NSURL, NSImage>()
     private let session: URLSession
+    private var memoryPressureSource: (any DispatchSourceMemoryPressure)?
 
     public init(
-        totalCostLimitMB: Int = 30,
-        countLimit: Int = 200,
+        totalCostLimitMB: Int = 20,
+        countLimit: Int = 150,
         session: URLSession = .shared
     ) {
         self.session = session
@@ -34,6 +35,7 @@ public final class ImageCacheManager: ImageCaching, @unchecked Sendable {
             AppLogger.shared.warning(category: .system, "macOS bellek baskısı algılandı: ImageCache temizlendi.")
         }
         source.resume()
+        self.memoryPressureSource = source
     }
 
     public func image(for url: URL) -> NSImage? {

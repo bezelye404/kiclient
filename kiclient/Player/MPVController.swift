@@ -26,8 +26,8 @@ public struct MPVConfiguration: Equatable, Sendable {
         hwdec: "videotoolbox",
         vo: "libmpv",
         cache: "yes",
-        demuxerMaxBytes: "33554432",      // 32 MiB
-        demuxerMaxBackBytes: "16777216",  // 16 MiB
+        demuxerMaxBytes: "20971520",      // 20 MiB (~18-20s live buffer, 12 MiB RAM tasarrufu)
+        demuxerMaxBackBytes: "4194304",   // 4 MiB (canlı yayında geriye sarma yok, 12 MiB RAM tasarrufu)
         videoSync: "audio",
         frameDrop: "vo",
         profile: "low-latency"
@@ -36,6 +36,7 @@ public struct MPVConfiguration: Equatable, Sendable {
     public func optionsDictionary() -> [String: String] {
         return [
             "hwdec": hwdec,
+            "hwdec-codecs": "all",
             "vo": vo,
             "cache": cache,
             "demuxer-max-bytes": demuxerMaxBytes,
@@ -47,6 +48,13 @@ public struct MPVConfiguration: Equatable, Sendable {
             "audio-buffer": "0.2",
             "correct-pts": "yes",
             "hr-seek": "no",
+            "scale": "bilinear",
+            "cscale": "bilinear",
+            "dscale": "bilinear",
+            "correct-downscaling": "no",
+            "sws-scaler": "fast-bilinear",
+            "interpolation": "no",
+            "opengl-pbo": "yes",
             "input-default-bindings": "no",
             "input-vo-keyboard": "no"
         ]
@@ -189,11 +197,12 @@ public final class MPVController: MPVControlling {
     }
 
     public func requestFrameRender() {
-        guard let rCtx = renderContext else { return }
+        guard let rCtx = renderContext, isVideoRenderingActive else { return }
         let flags = mpv_render_context_update(rCtx)
         if (flags & UInt64(MPV_RENDER_UPDATE_FRAME.rawValue)) != 0 {
             DispatchQueue.main.async { [weak self] in
-                self?.attachedLayer?.setNeedsDisplay()
+                guard let self = self, self.isVideoRenderingActive else { return }
+                self.attachedLayer?.setNeedsDisplay()
             }
         }
     }
@@ -370,8 +379,8 @@ public final class MPVController: MPVControlling {
 
     public func setVideoRenderingEnabled(_ enabled: Bool) {
         isVideoRenderingActive = enabled
-        if !enabled {
-            attachedLayer?.setNeedsDisplay()
+        DispatchQueue.main.async { [weak self] in
+            self?.attachedLayer?.setNeedsDisplay()
         }
         AppLogger.shared.info(category: .player, "Video katman çizimi: \(enabled ? "Aktif" : "Pasif (GPU Tasarrufu)")")
     }

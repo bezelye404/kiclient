@@ -223,39 +223,53 @@ public struct MainWindowView: View {
                 .transition(.move(edge: .bottom).combined(with: .opacity))
             }
         }
+        .background(WindowAccessor { window in
+            window.titleVisibility = .hidden
+            window.title = "kiclient"
+        })
+        .navigationTitle("")
         .toolbar {
             ToolbarItemGroup(placement: .navigation) {
-                HStack(spacing: DesignTokens.Spacing.sm) {
+                HStack(spacing: DesignTokens.Spacing.xs) {
                     Image(systemName: "tv")
-                        .foregroundColor(.accentColor)
-                        .imageScale(.medium)
-                        .symbolRenderingMode(.hierarchical)
+                        .foregroundColor(.secondary)
+                        .imageScale(.small)
 
-                    // Standart Sistem Fontu Arama Alanı (Monospace/Terminal görünümü kaldırıldı)
-                    TextField("Kanal adı girin...", text: $channelInput)
-                        .textFieldStyle(.roundedBorder)
+                    TextField("Kanal adı...", text: $channelInput)
+                        .textFieldStyle(.plain)
                         .font(.body)
-                        .frame(width: 140)
+                        .frame(width: 130)
                         .onSubmit {
                             triggerLoadChannel()
                         }
 
-                    Button(action: {
-                        triggerLoadChannel()
-                    }) {
-                        if playerVM.isLoadingChannel {
-                            ProgressView()
-                                .controlSize(.small)
-                        } else {
+                    if playerVM.isLoadingChannel {
+                        ProgressView()
+                            .controlSize(.small)
+                            .scaleEffect(0.65)
+                            .frame(width: 16, height: 16)
+                    } else {
+                        Button(action: {
+                            triggerLoadChannel()
+                        }) {
                             Image(systemName: "arrow.right.circle.fill")
                                 .foregroundColor(.accentColor)
                                 .imageScale(.medium)
                         }
+                        .buttonStyle(.plain)
+                        .disabled(channelInput.trimmingCharacters(in: .whitespaces).isEmpty)
+                        .accessibilityLabel("Kanalı Yükle")
                     }
-                    .buttonStyle(.plain)
-                    .disabled(playerVM.isLoadingChannel || channelInput.trimmingCharacters(in: .whitespaces).isEmpty)
-                    .accessibilityLabel("Kanalı Yükle")
                 }
+                .padding(.horizontal, DesignTokens.Spacing.sm)
+                .padding(.vertical, 4)
+                .background(Color(NSColor.controlBackgroundColor))
+                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.CornerRadius.small))
+                .overlay(
+                    RoundedRectangle(cornerRadius: DesignTokens.CornerRadius.small)
+                        .stroke(DesignTokens.Colors.separator, lineWidth: 1)
+                )
+                .padding(.leading, DesignTokens.Spacing.xl + 4)
             }
 
             ToolbarItemGroup(placement: .principal) {
@@ -487,6 +501,27 @@ public struct MainWindowView: View {
             return String(format: "%d:%02d:%02d", hours, minutes, secs)
         } else {
             return String(format: "%02d:%02d", minutes, secs)
+        }
+    }
+}
+
+// MARK: - Native Window Accessor
+struct WindowAccessor: NSViewRepresentable {
+    let callback: (NSWindow) -> Void
+
+    func makeNSView(context: Context) -> NSView {
+        let view = NSView()
+        DispatchQueue.main.async {
+            if let window = view.window {
+                callback(window)
+            }
+        }
+        return view
+    }
+
+    func updateNSView(_ nsView: NSView, context: Context) {
+        if let window = nsView.window {
+            callback(window)
         }
     }
 }

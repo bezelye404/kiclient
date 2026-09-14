@@ -75,7 +75,7 @@ public final class ChatViewModel: ObservableObject {
         queue.sync {
             if !pendingMessages.isEmpty {
                 toAdd = pendingMessages
-                pendingMessages.removeAll()
+                pendingMessages.removeAll(keepingCapacity: true)
             }
         }
 
