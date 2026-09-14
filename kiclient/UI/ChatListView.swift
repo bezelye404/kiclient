@@ -21,11 +21,12 @@ public struct ChatListView: NSViewRepresentable {
         scrollView.autohidesScrollers = true
         scrollView.drawsBackground = false
 
-        let tableView = NSTableView()
+        let tableView = ChatTableView()
         tableView.headerView = nil
         tableView.backgroundColor = .clear
         tableView.selectionHighlightStyle = .none
         tableView.intercellSpacing = NSSize(width: 0, height: 4)
+        tableView.columnAutoresizingStyle = .uniformColumnAutoresizingStyle
 
         let column = NSTableColumn(identifier: NSUserInterfaceItemIdentifier("ChatColumn"))
         column.resizingMask = .autoresizingMask
@@ -61,6 +62,14 @@ public struct ChatListView: NSViewRepresentable {
 
             let wasAtBottom = isUserNearBottom()
             displayedMessages = newMessages
+
+            if let col = tableView.tableColumns.first {
+                let targetWidth = tableView.bounds.width
+                if targetWidth > 50 && abs(col.width - targetWidth) > 2 {
+                    col.width = targetWidth
+                }
+            }
+
             tableView.reloadData()
 
             if wasAtBottom && !newMessages.isEmpty {
@@ -75,8 +84,7 @@ public struct ChatListView: NSViewRepresentable {
                   let documentView = scrollView.documentView else { return true }
             let visibleRect = scrollView.contentView.visibleRect
             let docHeight = documentView.bounds.height
-            // Kullanıcı en alttan 40 piksel içerisindeyse en altta kabul et
-            return (visibleRect.origin.y + visibleRect.size.height) >= (docHeight - 40)
+            return (visibleRect.origin.y + visibleRect.size.height) >= (docHeight - 50)
         }
 
         public func numberOfRows(in tableView: NSTableView) -> Int {
@@ -86,11 +94,15 @@ public struct ChatListView: NSViewRepresentable {
         public func tableView(_ tableView: NSTableView, heightOfRow row: Int) -> CGFloat {
             guard row < displayedMessages.count else { return 24 }
             let message = displayedMessages[row]
-            let width = max(tableView.bounds.width - 20, 100)
+            let colWidth = tableView.tableColumns.first?.width ?? tableView.bounds.width
+            let contentWidth = max(colWidth - 24, 100)
+
             let attrStr = makeAttributedString(for: message)
-            let rect = attrStr.boundingRect(with: NSSize(width: width, height: .greatestFiniteMagnitude),
-                                           options: [.usesLineFragmentOrigin, .usesFontLeading])
-            return max(ceil(rect.height) + 6, 22)
+            let rect = attrStr.boundingRect(
+                with: NSSize(width: contentWidth, height: .greatestFiniteMagnitude),
+                options: [.usesLineFragmentOrigin, .usesFontLeading]
+            )
+            return max(ceil(rect.height) + 8, 22)
         }
 
         public func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
@@ -112,10 +124,10 @@ public struct ChatListView: NSViewRepresentable {
 
                 if let cell = cell {
                     NSLayoutConstraint.activate([
-                        textField.leadingAnchor.constraint(equalTo: cell.leadingAnchor, constant: 6),
-                        textField.trailingAnchor.constraint(equalTo: cell.trailingAnchor, constant: -6),
-                        textField.topAnchor.constraint(equalTo: cell.topAnchor, constant: 2),
-                        textField.bottomAnchor.constraint(equalTo: cell.bottomAnchor, constant: -2)
+                        textField.leadingAnchor.constraint(equalTo: cell.leadingAnchor, constant: 10),
+                        textField.trailingAnchor.constraint(equalTo: cell.trailingAnchor, constant: -10),
+                        textField.topAnchor.constraint(equalTo: cell.topAnchor, constant: 3),
+                        textField.bottomAnchor.constraint(equalTo: cell.bottomAnchor, constant: -3)
                     ])
                 }
             }
@@ -126,18 +138,43 @@ public struct ChatListView: NSViewRepresentable {
 
         private func makeAttributedString(for message: ChatMessage) -> NSAttributedString {
             let result = NSMutableAttributedString()
-
             let baseSize = parent.fontSize
             let badgeSize = max(baseSize - 2, 9)
 
+            let paragraphStyle = NSMutableParagraphStyle()
+            paragraphStyle.lineSpacing = 2.5
+            paragraphStyle.lineBreakMode = .byWordWrapping
+
             // Rozetler
             for badge in message.badges {
-                let badgeText = "[\(badge.type.prefix(3).uppercased())] "
+                let badgeType = badge.type.lowercased()
+                let badgeColor: NSColor
+                let badgeLabel: String
+
+                switch badgeType {
+                case "moderator":
+                    badgeLabel = "MOD"
+                    badgeColor = NSColor.systemGreen
+                case "subscriber":
+                    badgeLabel = "SUB"
+                    badgeColor = NSColor.systemPurple
+                case "vip":
+                    badgeLabel = "VIP"
+                    badgeColor = NSColor.systemPink
+                case "broadcaster":
+                    badgeLabel = "HOST"
+                    badgeColor = NSColor.systemRed
+                default:
+                    badgeLabel = String(badge.type.prefix(3)).uppercased()
+                    badgeColor = NSColor.systemGray
+                }
+
                 let badgeAttr = NSAttributedString(
-                    string: badgeText,
+                    string: "[\(badgeLabel)] ",
                     attributes: [
                         .font: NSFont.boldSystemFont(ofSize: badgeSize),
-                        .foregroundColor: NSColor.systemGray
+                        .foregroundColor: badgeColor,
+                        .paragraphStyle: paragraphStyle
                     ]
                 )
                 result.append(badgeAttr)
@@ -153,7 +190,8 @@ public struct ChatListView: NSViewRepresentable {
                 string: "\(message.senderUsername): ",
                 attributes: [
                     .font: NSFont.boldSystemFont(ofSize: baseSize),
-                    .foregroundColor: senderColor
+                    .foregroundColor: senderColor,
+                    .paragraphStyle: paragraphStyle
                 ]
             )
             result.append(usernameAttr)
@@ -163,13 +201,24 @@ public struct ChatListView: NSViewRepresentable {
                 string: message.content,
                 attributes: [
                     .font: NSFont.systemFont(ofSize: baseSize),
-                    .foregroundColor: NSColor.labelColor
+                    .foregroundColor: NSColor.labelColor,
+                    .paragraphStyle: paragraphStyle
                 ]
             )
             result.append(messageAttr)
 
             return result
         }
+    }
+}
+
+final class ChatTableView: NSTableView {
+    override func viewDidEndLiveResize() {
+        super.viewDidEndLiveResize()
+        if let col = tableColumns.first {
+            col.width = bounds.width
+        }
+        noteHeightOfRows(withIndexesChanged: IndexSet(integersIn: 0..<numberOfRows))
     }
 }
 

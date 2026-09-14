@@ -1,5 +1,7 @@
 import Foundation
 import AppKit
+import QuartzCore
+import OpenGL.GL3
 
 public enum MPVPlaybackState: Equatable, Sendable {
     case idle
@@ -22,7 +24,7 @@ public struct MPVConfiguration: Equatable, Sendable {
 
     public static let lowResourceDefault = MPVConfiguration(
         hwdec: "videotoolbox",
-        vo: "gpu-next",
+        vo: "libmpv",
         cache: "yes",
         demuxerMaxBytes: "33554432",      // 32 MiB
         demuxerMaxBackBytes: "16777216",  // 16 MiB
@@ -74,9 +76,15 @@ public final class MPVController: MPVControlling {
     public var onTimePosChanged: ((Double) -> Void)?
 
     private var mpv: OpaquePointer?
+    public private(set) var renderContext: OpaquePointer?
     private let eventQueue = DispatchQueue(label: "com.kiclient.mpv.events", qos: .userInitiated)
     private var isRunning = false
     private weak var attachedView: NSView?
+    private weak var attachedLayer: CAOpenGLLayer?
+
+    public var hasRenderContext: Bool {
+        return renderContext != nil
+    }
 
     public init(configuration: MPVConfiguration = .lowResourceDefault) {
         self.configuration = configuration
@@ -119,16 +127,108 @@ public final class MPVController: MPVControlling {
 
     public func attach(to view: NSView) {
         self.attachedView = view
-        guard let handle = mpv else { return }
-
-        // Host processteki NSView bellek adresini wid olarak ver
-        let viewPointer = Int64(bitPattern: UInt64(UInt(bitPattern: Unmanaged.passUnretained(view).toOpaque())))
-        var wid = viewPointer
-        let err = mpv_set_option(handle, "wid", MPV_FORMAT_INT64, &wid)
-        if err < 0 {
-            let errMsg = String(cString: mpv_error_string(err))
-            print("[MPVController] wid ayarlanamadı: \(errMsg)")
+        if let container = view as? MPVVideoContainerView, let layer = container.videoLayer {
+            attachVideoLayer(layer)
         }
+    }
+
+    public func attachVideoLayer(_ layer: MPVVideoLayer) {
+        self.attachedLayer = layer
+        guard let handle = self.mpv, let cglContext = layer.cglContext else { return }
+
+        if renderContext != nil {
+            return
+        }
+
+        CGLSetCurrentContext(cglContext)
+
+        let apiType = strdup(MPV_RENDER_API_TYPE_OPENGL)
+        defer { free(apiType) }
+
+        var initParams = mpv_opengl_init_params(
+            get_proc_address: { (_, name) -> UnsafeMutableRawPointer? in
+                guard let name = name else { return nil }
+                let symbolName = CFStringCreateWithCString(kCFAllocatorDefault, name, CFStringBuiltInEncodings.ASCII.rawValue)
+                guard let bundle = CFBundleGetBundleWithIdentifier("com.apple.opengl" as CFString),
+                      let addr = CFBundleGetFunctionPointerForName(bundle, symbolName) else {
+                    return nil
+                }
+                return addr
+            },
+            get_proc_address_ctx: nil
+        )
+
+        var advanced: CInt = 1
+        var params: [mpv_render_param] = [
+            mpv_render_param(type: MPV_RENDER_PARAM_API_TYPE, data: UnsafeMutableRawPointer(apiType)),
+            mpv_render_param(type: MPV_RENDER_PARAM_OPENGL_INIT_PARAMS, data: &initParams),
+            mpv_render_param(type: MPV_RENDER_PARAM_ADVANCED_CONTROL, data: &advanced),
+            mpv_render_param()
+        ]
+
+        var rCtx: OpaquePointer?
+        let err = mpv_render_context_create(&rCtx, handle, &params)
+        if err >= 0, let validCtx = rCtx {
+            self.renderContext = validCtx
+            AppLogger.shared.info(category: .player, "libmpv Render API (OpenGL) başarıyla kuruldu.")
+
+            let selfPtr = Unmanaged.passUnretained(self).toOpaque()
+            mpv_render_context_set_update_callback(validCtx, { ctx in
+                guard let ctx = ctx else { return }
+                let controller = Unmanaged<MPVController>.fromOpaque(ctx).takeUnretainedValue()
+                controller.requestFrameRender()
+            }, selfPtr)
+        } else {
+            let errStr = String(cString: mpv_error_string(err))
+            AppLogger.shared.error(category: .player, "mpv_render_context_create hatası: \(errStr)")
+        }
+    }
+
+    public func requestFrameRender() {
+        guard let rCtx = renderContext else { return }
+        let flags = mpv_render_context_update(rCtx)
+        if (flags & UInt64(MPV_RENDER_UPDATE_FRAME.rawValue)) != 0 {
+            DispatchQueue.main.async { [weak self] in
+                self?.attachedLayer?.setNeedsDisplay()
+            }
+        }
+    }
+
+    public func renderFrame(in ctx: CGLContextObj, bounds: CGRect) {
+        guard let rCtx = renderContext else {
+            glClearColor(0, 0, 0, 1)
+            glClear(GLbitfield(GL_COLOR_BUFFER_BIT))
+            return
+        }
+
+        CGLSetCurrentContext(ctx)
+
+        var fbo: GLint = 0
+        glGetIntegerv(GLenum(GL_DRAW_FRAMEBUFFER_BINDING), &fbo)
+
+        var viewport: [GLint] = [0, 0, 0, 0]
+        glGetIntegerv(GLenum(GL_VIEWPORT), &viewport)
+
+        let scale = NSScreen.main?.backingScaleFactor ?? 2.0
+        let w: Int32 = viewport[2] > 0 ? viewport[2] : Int32(max(bounds.width * scale, 1.0))
+        let h: Int32 = viewport[3] > 0 ? viewport[3] : Int32(max(bounds.height * scale, 1.0))
+
+        var flip: CInt = 1
+        var fboData = mpv_opengl_fbo(
+            fbo: fbo,
+            w: w,
+            h: h,
+            internal_format: 0
+        )
+
+        var params: [mpv_render_param] = [
+            mpv_render_param(type: MPV_RENDER_PARAM_OPENGL_FBO, data: &fboData),
+            mpv_render_param(type: MPV_RENDER_PARAM_FLIP_Y, data: &flip),
+            mpv_render_param()
+        ]
+
+        mpv_render_context_render(rCtx, &params)
+        glFlush()
     }
 
     @discardableResult
@@ -305,6 +405,11 @@ public final class MPVController: MPVControlling {
 
     private func destroyMPV() {
         isRunning = false
+        if let rCtx = renderContext {
+            mpv_render_context_set_update_callback(rCtx, nil, nil)
+            mpv_render_context_free(rCtx)
+            renderContext = nil
+        }
         if let handle = mpv {
             mpv = nil
             mpv_terminate_destroy(handle)

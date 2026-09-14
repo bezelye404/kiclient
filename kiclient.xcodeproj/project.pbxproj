@@ -325,6 +325,10 @@
 				CODE_SIGN_ENTITLEMENTS = kiclient/Resources/kiclient.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"GL_SILENCE_DEPRECATION=1",
+				);
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -342,6 +346,12 @@
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-lmpv",
+					"-framework OpenGL",
+					"-framework QuartzCore",
+				);
+				OTHER_SWIFT_FLAGS = (
+					"$(inherited)",
+					"-DGL_SILENCE_DEPRECATION",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.kiclient.app;
 				PRODUCT_NAME = kiclient;
@@ -383,6 +393,10 @@
 				CODE_SIGN_ENTITLEMENTS = kiclient/Resources/kiclient.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"GL_SILENCE_DEPRECATION=1",
+				);
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -400,6 +414,12 @@
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-lmpv",
+					"-framework OpenGL",
+					"-framework QuartzCore",
+				);
+				OTHER_SWIFT_FLAGS = (
+					"$(inherited)",
+					"-DGL_SILENCE_DEPRECATION",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.kiclient.app;
 				PRODUCT_NAME = kiclient;

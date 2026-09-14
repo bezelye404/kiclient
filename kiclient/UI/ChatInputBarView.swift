@@ -26,16 +26,32 @@ public struct ChatInputBarView: View {
         VStack(spacing: 4) {
             if authManager.isAuthenticated {
                 HStack(spacing: 8) {
-                    TextField("Bir mesaj gönder...", text: $messageText)
-                        .textFieldStyle(PlainTextFieldStyle())
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 5)
-                        .background(Color(NSColor.textBackgroundColor))
-                        .cornerRadius(5)
-                        .onSubmit {
-                            triggerSendMessage()
+                    HStack(spacing: 6) {
+                        TextField("Bir mesaj gönder...", text: $messageText)
+                            .textFieldStyle(PlainTextFieldStyle())
+                            .font(.system(size: 12))
+                            .onSubmit {
+                                triggerSendMessage()
+                            }
+                            .disabled(isSending || broadcasterId == nil)
+
+                        if !messageText.isEmpty {
+                            Button(action: { messageText = "" }) {
+                                Image(systemName: "xmark.circle.fill")
+                                    .foregroundColor(.secondary)
+                                    .font(.system(size: 11))
+                            }
+                            .buttonStyle(PlainButtonStyle())
                         }
-                        .disabled(isSending || broadcasterId == nil)
+                    }
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .background(Color(NSColor.textBackgroundColor))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color.primary.opacity(0.12), lineWidth: 1)
+                    )
 
                     Button(action: {
                         triggerSendMessage()
@@ -46,25 +62,27 @@ public struct ChatInputBarView: View {
                                 .frame(width: 16, height: 16)
                         } else {
                             Image(systemName: "paperplane.fill")
+                                .font(.system(size: 12))
                         }
                     }
                     .buttonStyle(BorderedProminentButtonStyle())
+                    .controlSize(.regular)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
                     .disabled(isSending || messageText.trimmingCharacters(in: .whitespaces).isEmpty || broadcasterId == nil)
                 }
             } else {
-                HStack {
-                    Text("Sohbete yazmak için giriş yapın:")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-
-                    Spacer()
-
-                    Button(action: onOpenSettings) {
-                        Text("Giriş Yap")
-                            .font(.caption.bold())
+                Button(action: onOpenSettings) {
+                    HStack(spacing: 6) {
+                        Image(systemName: "lock.fill")
+                            .font(.system(size: 11))
+                        Text("Sohbete katılmak için giriş yapın")
+                            .font(.system(size: 12, weight: .medium))
                     }
-                    .buttonStyle(BorderedButtonStyle())
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 6)
                 }
+                .buttonStyle(BorderedButtonStyle())
+                .controlSize(.regular)
             }
 
             if let err = sendError {
@@ -75,7 +93,7 @@ public struct ChatInputBarView: View {
             }
         }
         .padding(.horizontal, 10)
-        .padding(.vertical, 6)
+        .padding(.vertical, 8)
         .background(Color(NSColor.controlBackgroundColor))
     }
 

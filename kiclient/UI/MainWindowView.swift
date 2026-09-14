@@ -21,233 +21,99 @@ public struct MainWindowView: View {
 
     public var body: some View {
         VStack(spacing: 0) {
-            // Üst Kontrol Çubuğu (Kanal, Durum ve Araçlar)
-            HStack(spacing: 12) {
-                Image(systemName: "tv.circle.fill")
-                    .foregroundColor(.green)
-                    .font(.title2)
-
-                // Kanal Girişi
-                HStack(spacing: 4) {
-                    Text("kick.com/")
-                        .foregroundColor(.secondary)
-                        .font(.system(.body, design: .monospaced))
-
-                    TextField("kanal-adı", text: $channelInput)
-                        .textFieldStyle(PlainTextFieldStyle())
-                        .font(.system(.body, design: .monospaced))
-                        .frame(width: 130)
-                        .onSubmit {
-                            triggerLoadChannel()
-                        }
-                }
-                .padding(.horizontal, 10)
-                .padding(.vertical, 6)
-                .background(Color(NSColor.textBackgroundColor))
-                .cornerRadius(6)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 6)
-                        .stroke(Color.secondary.opacity(0.3), lineWidth: 1)
-                )
-
-                Button(action: {
-                    triggerLoadChannel()
-                }) {
-                    if playerVM.isLoadingChannel {
-                        ProgressView()
-                            .progressViewStyle(CircularProgressViewStyle())
-                            .scaleEffect(0.6)
-                            .frame(width: 16, height: 16)
-                    } else {
-                        Label("Kanalı Aç", systemImage: "arrow.right.circle.fill")
-                    }
-                }
-                .keyboardShortcut(.defaultAction)
-                .disabled(playerVM.isLoadingChannel || channelInput.trimmingCharacters(in: .whitespaces).isEmpty)
-
-                Divider()
-                    .frame(height: 20)
-
-                // Canlı / Çevrimdışı Bilgi Rozeti
-                if let info = playerVM.currentChannelInfo {
-                    if info.isLive {
-                        HStack(spacing: 6) {
-                            Circle().fill(Color.red).frame(width: 8, height: 8)
-                            Text("CANLI")
-                                .font(.caption.bold())
-                                .foregroundColor(.red)
-
-                            if let viewers = info.viewerCount {
-                                Text("👁 \(formatViewers(viewers))")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
-
-                            if let title = info.streamTitle, !title.isEmpty {
-                                Text("— \(title)")
-                                    .font(.caption)
-                                    .foregroundColor(.primary)
-                                    .lineLimit(1)
-                                    .truncationMode(.tail)
-                            }
-                        }
-                    } else {
-                        HStack(spacing: 6) {
-                            Circle().fill(Color.gray).frame(width: 8, height: 8)
-                            Text("ÇEVRİMDIŞI")
-                                .font(.caption.bold())
-                                .foregroundColor(.secondary)
-                        }
-                    }
-                }
-
-                Spacer()
-
-                // Geliştirici Konsolu Düğmesi
-                Button(action: {
-                    withAnimation(.easeInOut(duration: 0.2)) {
-                        showDevConsole.toggle()
-                    }
-                }) {
-                    Image(systemName: showDevConsole ? "terminal.fill" : "terminal")
-                        .foregroundColor(showDevConsole ? .green : .primary)
-                }
-                .help("Geliştirici Konsolu (Dev Console) [⌘D]")
-                .keyboardShortcut("d", modifiers: [.command])
-
-                // Test HLS & Doğrudan URL
-                Button(action: {
-                    showDirectURLEntry.toggle()
-                }) {
-                    Image(systemName: "link")
-                }
-                .help("Özel HLS URL'si Gir")
-
-                Button(action: {
-                    playerVM.load(url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8")
-                }) {
-                    Text("Test HLS")
-                }
-                .help("Halka açık test akışı oynat")
-
-                // Ayarlar Düğmesi
-                Button(action: {
-                    showSettingsSheet = true
-                }) {
-                    Image(systemName: "gearshape.fill")
-                }
-                .help("Ayarlar (Kick OAuth, Kalite & Performans)")
-
-                Divider()
-                    .frame(height: 20)
-
-                // Sohbet Göster/Gizle Butonu
-                Button(action: {
-                    withAnimation(.easeInOut(duration: 0.2)) {
-                        showChatSidebar.toggle()
-                    }
-                }) {
-                    Label(showChatSidebar ? "Sohbeti Gizle" : "Sohbeti Göster",
-                          systemImage: showChatSidebar ? "sidebar.right" : "bubble.left.and.bubble.right.fill")
-                }
-            }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 10)
-            .background(Color(NSColor.windowBackgroundColor))
-
-            // Özel URL Giriş Çubuğu (Açılırsa)
-            if showDirectURLEntry {
-                HStack(spacing: 8) {
-                    TextField("Doğrudan .m3u8 HLS URL'si", text: $directURLInput)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .onSubmit {
-                            playerVM.load(url: directURLInput)
-                        }
-                    Button("Yükle") {
-                        playerVM.load(url: directURLInput)
-                    }
-                }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 6)
-                .background(Color(NSColor.controlBackgroundColor))
-                Divider()
-            }
-
-            Divider()
-
             // Ana Sahne: Sol Video, Sağ Sohbet Tablosu
             HSplitView {
                 // Sol: Video Sahnesi
                 VStack(spacing: 0) {
                     ZStack {
+                        Color.black
+
                         MPVMetalView(controller: playerVM.controller)
-                            .background(Color.black)
 
                         // Yükleniyor Göstergesi
                         if case .loading = playerVM.state {
-                            ProgressView("Yayın yükleniyor...")
-                                .progressViewStyle(CircularProgressViewStyle())
-                                .padding(16)
-                                .background(Color.black.opacity(0.75))
-                                .foregroundColor(.white)
-                                .cornerRadius(10)
+                            VStack(spacing: 10) {
+                                ProgressView()
+                                    .scaleEffect(1.1)
+                                Text("Yayın yükleniyor...")
+                                    .font(.subheadline)
+                                    .foregroundColor(.white.opacity(0.85))
+                            }
+                            .padding(20)
+                            .background(.ultraThinMaterial)
+                            .cornerRadius(12)
                         }
 
                         // Kanal Bildirimi (Offline veya Hata)
                         if let notice = playerVM.channelNotice {
                             VStack(spacing: 12) {
-                                Image(systemName: "tv.slash")
-                                    .font(.system(size: 44))
+                                Image(systemName: "tv.slash.fill")
+                                    .font(.system(size: 40))
                                     .foregroundColor(.secondary)
                                 Text(notice)
                                     .font(.headline)
                                     .foregroundColor(.white)
                                     .multilineTextAlignment(.center)
-                                Button("Yenile") {
+                                Button("Yeniden Dene") {
                                     triggerLoadChannel()
                                 }
-                                .buttonStyle(BorderedButtonStyle())
+                                .buttonStyle(BorderedProminentButtonStyle())
+                                .controlSize(.small)
                             }
                             .padding(24)
-                            .background(Color.black.opacity(0.85))
-                            .cornerRadius(12)
+                            .background(Color.black.opacity(0.82))
+                            .cornerRadius(14)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 14)
+                                    .stroke(Color.white.opacity(0.12), lineWidth: 1)
+                            )
                         }
                     }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
 
                     Divider()
 
-                    // Alt Oynatma Kontrolleri
-                    HStack(spacing: 16) {
+                    // Alt Şık Oynatma Kontrolleri
+                    HStack(spacing: 14) {
                         Button(action: {
                             playerVM.togglePlayPause()
                         }) {
                             Image(systemName: playerVM.state == .playing ? "pause.fill" : "play.fill")
-                                .imageScale(.medium)
+                                .font(.system(size: 13, weight: .bold))
                         }
-                        .buttonStyle(BorderlessButtonStyle())
+                        .buttonStyle(PlainButtonStyle())
                         .disabled(playerVM.currentURL.isEmpty)
+                        .help(playerVM.state == .playing ? "Duraklat" : "Oynat")
 
                         Button(action: {
                             playerVM.stop()
                         }) {
                             Image(systemName: "stop.fill")
-                                .imageScale(.medium)
+                                .font(.system(size: 11, weight: .bold))
                         }
-                        .buttonStyle(BorderlessButtonStyle())
+                        .buttonStyle(PlainButtonStyle())
                         .disabled(playerVM.state == .idle || playerVM.state == .stopped)
+                        .help("Durdur")
 
-                        Button(action: {
-                            playerVM.toggleMute()
-                        }) {
-                            Image(systemName: playerVM.isMuted ? "speaker.slash.fill" : "speaker.wave.2.fill")
-                                .imageScale(.medium)
+                        Divider().frame(height: 14)
+
+                        // Ses Kontrolü
+                        HStack(spacing: 6) {
+                            Button(action: {
+                                playerVM.toggleMute()
+                            }) {
+                                Image(systemName: playerVM.isMuted ? "speaker.slash.fill" : (playerVM.volume < 30 ? "speaker.1.fill" : "speaker.wave.2.fill"))
+                                    .font(.system(size: 12))
+                                    .foregroundColor(playerVM.isMuted ? .red : .primary)
+                            }
+                            .buttonStyle(PlainButtonStyle())
+
+                            Slider(value: $playerVM.volume, in: 0...100)
+                                .frame(width: 75)
+                                .controlSize(.small)
                         }
-                        .buttonStyle(BorderlessButtonStyle())
 
-                        Slider(value: $playerVM.volume, in: 0...100)
-                            .frame(width: 80)
-
-                        // Kalite Seçici Menüsü
+                        // Kalite Seçici Menüsü (Modern Rozet)
                         Menu {
                             ForEach(StreamQuality.allCases) { q in
                                 Button(action: {
@@ -262,36 +128,44 @@ public struct MainWindowView: View {
                                 }
                             }
                         } label: {
-                            Text(playerVM.selectedQuality.rawValue)
-                                .font(.caption.bold())
-                                .foregroundColor(.secondary)
+                            HStack(spacing: 4) {
+                                Image(systemName: "slider.horizontal.3")
+                                    .font(.system(size: 9))
+                                Text(playerVM.selectedQuality.rawValue)
+                                    .font(.system(size: 11, weight: .bold, design: .rounded))
+                            }
+                            .padding(.horizontal, 7)
+                            .padding(.vertical, 3)
+                            .background(Color(NSColor.controlBackgroundColor))
+                            .clipShape(RoundedRectangle(cornerRadius: 5))
                         }
                         .menuStyle(BorderlessButtonMenuStyle())
-                        .frame(width: 75)
+                        .fixedSize()
 
                         Spacer()
 
-                        statusText(for: playerVM.state)
+                        statusBadge(for: playerVM.state)
 
                         if playerVM.timePosition > 0 {
                             Text(formatTime(playerVM.timePosition))
-                                .font(.system(.caption, design: .monospaced))
+                                .font(.system(size: 11, weight: .medium, design: .monospaced))
                                 .foregroundColor(.secondary)
                         }
                     }
                     .padding(.horizontal, 14)
-                    .padding(.vertical, 7)
+                    .padding(.vertical, 8)
                     .background(Color(NSColor.windowBackgroundColor))
                 }
-                .frame(minWidth: 480)
+                .layoutPriority(1)
+                .frame(minWidth: 480, maxWidth: .infinity, maxHeight: .infinity)
 
                 // Sağ: Sohbet Paneli (NSTableView Tabanlı)
                 if showChatSidebar {
                     VStack(spacing: 0) {
                         // Sohbet Başlığı
-                        HStack {
+                        HStack(spacing: 8) {
                             Text("CANLI SOHBET")
-                                .font(.caption.bold())
+                                .font(.system(size: 11, weight: .bold, design: .rounded))
                                 .foregroundColor(.secondary)
 
                             Spacer()
@@ -299,18 +173,18 @@ public struct MainWindowView: View {
                             socketStatusBadge(chatVM.socketState)
                         }
                         .padding(.horizontal, 12)
-                        .padding(.vertical, 8)
+                        .padding(.vertical, 9)
                         .background(Color(NSColor.controlBackgroundColor))
 
                         Divider()
 
-                        // Yüksek Hızlı NSTableView Sohbet Listesi (Dinamik Yazı Boyutu Destekli)
+                        // Yüksek Hızlı NSTableView Sohbet Listesi
                         ChatListView(viewModel: chatVM, fontSize: CGFloat(chatFontSize))
                             .background(Color(NSColor.textBackgroundColor))
 
                         Divider()
 
-                        // Mesaj Giriş ve Gönderim Çubuğu (Faz 4)
+                        // Mesaj Giriş ve Gönderim Çubuğu
                         ChatInputBarView(
                             authManager: authManager,
                             chatSender: chatSender,
@@ -320,20 +194,187 @@ public struct MainWindowView: View {
                             }
                         )
                     }
-                    .frame(minWidth: 260, idealWidth: 300, maxWidth: 400)
+                    .frame(minWidth: 260, idealWidth: 320, maxWidth: 450)
                 }
             }
-            .frame(minWidth: 780, minHeight: 450)
+            .frame(minWidth: 780, minHeight: 480)
 
-            // Alt Geliştirici Konsolu Paneli (Açıksa)
+            // Alt Geliştirici Konsolu Paneli (Açıksa Çekmece Olarak Açılır)
             if showDevConsole {
                 Divider()
                 DevConsoleView(mpvController: playerVM.controller, onClose: {
-                    withAnimation {
+                    withAnimation(.spring(response: 0.28, dampingFraction: 0.85)) {
                         showDevConsole = false
                     }
                 })
-                .transition(.move(edge: .bottom))
+                .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
+        }
+        .toolbar {
+            ToolbarItemGroup(placement: .navigation) {
+                HStack(spacing: 8) {
+                    Image(systemName: "play.tv.fill")
+                        .foregroundColor(.green)
+                        .font(.system(size: 14, weight: .bold))
+
+                    HStack(spacing: 2) {
+                        Text("kick.com/")
+                            .foregroundColor(.secondary)
+                            .font(.system(size: 12, weight: .medium, design: .monospaced))
+
+                        TextField("kanal", text: $channelInput)
+                            .textFieldStyle(PlainTextFieldStyle())
+                            .font(.system(size: 12, weight: .medium, design: .monospaced))
+                            .frame(width: 110)
+                            .onSubmit {
+                                triggerLoadChannel()
+                            }
+                    }
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(Color(NSColor.controlBackgroundColor))
+                    .clipShape(RoundedRectangle(cornerRadius: 6))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 6)
+                            .stroke(Color.primary.opacity(0.12), lineWidth: 1)
+                    )
+
+                    Button(action: {
+                        triggerLoadChannel()
+                    }) {
+                        if playerVM.isLoadingChannel {
+                            ProgressView()
+                                .scaleEffect(0.6)
+                                .frame(width: 14, height: 14)
+                        } else {
+                            Image(systemName: "arrow.right.circle.fill")
+                                .foregroundColor(.accentColor)
+                                .font(.system(size: 15))
+                        }
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                    .disabled(playerVM.isLoadingChannel || channelInput.trimmingCharacters(in: .whitespaces).isEmpty)
+                    .help("Kanalı Yükle [Enter]")
+                }
+            }
+
+            ToolbarItemGroup(placement: .principal) {
+                if let info = playerVM.currentChannelInfo {
+                    if info.isLive {
+                        HStack(spacing: 8) {
+                            HStack(spacing: 5) {
+                                Circle()
+                                    .fill(Color.red)
+                                    .frame(width: 7, height: 7)
+                                Text("CANLI")
+                                    .font(.system(size: 10, weight: .black))
+                                    .foregroundColor(.red)
+                            }
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 2)
+                            .background(Color.red.opacity(0.12))
+                            .clipShape(Capsule())
+
+                            if let viewers = info.viewerCount {
+                                HStack(spacing: 3) {
+                                    Image(systemName: "person.2.fill")
+                                        .font(.system(size: 10))
+                                    Text(formatViewers(viewers))
+                                        .font(.system(size: 11, weight: .semibold, design: .monospaced))
+                                }
+                                .foregroundColor(.secondary)
+                            }
+
+                            if let title = info.streamTitle, !title.isEmpty {
+                                Text(title)
+                                    .font(.system(size: 12, weight: .medium))
+                                    .foregroundColor(.primary)
+                                    .lineLimit(1)
+                                    .frame(maxWidth: 260)
+                            }
+                        }
+                    } else {
+                        HStack(spacing: 5) {
+                            Circle()
+                                .fill(Color.gray)
+                                .frame(width: 6, height: 6)
+                            Text("ÇEVRİMDIŞI")
+                                .font(.system(size: 10, weight: .bold))
+                                .foregroundColor(.secondary)
+                        }
+                        .padding(.horizontal, 7)
+                        .padding(.vertical, 2)
+                        .background(Color.secondary.opacity(0.1))
+                        .clipShape(Capsule())
+                    }
+                }
+            }
+
+            ToolbarItemGroup(placement: .automatic) {
+                // Doğrudan URL popover
+                Button(action: {
+                    showDirectURLEntry.toggle()
+                }) {
+                    Image(systemName: "link")
+                }
+                .help("Özel .m3u8 HLS URL'si Gir")
+                .popover(isPresented: $showDirectURLEntry) {
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text("Doğrudan Akış URL'si")
+                            .font(.caption.bold())
+                        HStack {
+                            TextField("https://.../master.m3u8", text: $directURLInput)
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
+                                .frame(width: 280)
+                            Button("Oynat") {
+                                playerVM.load(url: directURLInput)
+                                showDirectURLEntry = false
+                            }
+                            .buttonStyle(BorderedProminentButtonStyle())
+                        }
+                        Button("Mux Test Akışı Yükle") {
+                            directURLInput = "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
+                            playerVM.load(url: directURLInput)
+                            showDirectURLEntry = false
+                        }
+                        .font(.caption)
+                        .buttonStyle(LinkButtonStyle())
+                    }
+                    .padding(14)
+                }
+
+                // Geliştirici Konsolu Düğmesi
+                Button(action: {
+                    withAnimation(.spring(response: 0.28, dampingFraction: 0.85)) {
+                        showDevConsole.toggle()
+                    }
+                }) {
+                    Image(systemName: showDevConsole ? "terminal.fill" : "terminal")
+                        .foregroundColor(showDevConsole ? .green : .primary)
+                }
+                .help("Geliştirici Konsolu (Dev Console) [⌘D]")
+                .keyboardShortcut("d", modifiers: [.command])
+
+                // Ayarlar Düğmesi
+                Button(action: {
+                    showSettingsSheet = true
+                }) {
+                    Image(systemName: "gearshape")
+                }
+                .help("Ayarlar (Kick OAuth, Kalite & Performans) [⌘,]")
+                .keyboardShortcut(",", modifiers: [.command])
+
+                // Sohbet Göster/Gizle Butonu
+                Button(action: {
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        showChatSidebar.toggle()
+                    }
+                }) {
+                    Image(systemName: showChatSidebar ? "sidebar.right" : "bubble.left.and.bubble.right")
+                        .foregroundColor(showChatSidebar ? .accentColor : .secondary)
+                }
+                .help("Sohbeti Göster / Gizle [⌘⌥C]")
+                .keyboardShortcut("c", modifiers: [.command, .option])
             }
         }
         .sheet(isPresented: $showSettingsSheet) {
@@ -359,20 +400,32 @@ public struct MainWindowView: View {
     }
 
     @ViewBuilder
-    private func statusText(for state: MPVPlaybackState) -> some View {
+    private func statusBadge(for state: MPVPlaybackState) -> some View {
         switch state {
         case .idle:
             Text("Hazır").font(.caption).foregroundColor(.secondary)
         case .loading:
-            Text("Yükleniyor...").font(.caption).foregroundColor(.orange)
+            HStack(spacing: 4) {
+                ProgressView().scaleEffect(0.4).frame(width: 8, height: 8)
+                Text("Yükleniyor...").font(.caption).foregroundColor(.orange)
+            }
         case .playing:
-            Text("Oynatılıyor").font(.caption).foregroundColor(.green)
+            HStack(spacing: 4) {
+                Circle().fill(Color.green).frame(width: 6, height: 6)
+                Text("Oynatılıyor").font(.caption.bold()).foregroundColor(.green)
+            }
         case .paused:
-            Text("Duraklatıldı").font(.caption).foregroundColor(.yellow)
+            HStack(spacing: 4) {
+                Circle().fill(Color.yellow).frame(width: 6, height: 6)
+                Text("Duraklatıldı").font(.caption).foregroundColor(.yellow)
+            }
         case .stopped:
             Text("Durduruldu").font(.caption).foregroundColor(.secondary)
         case .error(let msg):
-            Text("Hata: \(msg)").font(.caption).foregroundColor(.red).lineLimit(1)
+            HStack(spacing: 4) {
+                Image(systemName: "exclamationmark.triangle.fill").foregroundColor(.red).font(.caption2)
+                Text(msg).font(.caption).foregroundColor(.red).lineLimit(1)
+            }
         }
     }
 

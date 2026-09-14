@@ -90,7 +90,7 @@ public struct DevConsoleView: View {
             Divider()
 
             // Filtre Çubuğu
-            HStack(spacing: 10) {
+            HStack(spacing: 8) {
                 Picker("Kategori:", selection: $selectedCategory) {
                     Text("TÜMÜ").tag("TÜMÜ")
                     ForEach(LogCategory.allCases, id: \.self) { cat in
@@ -98,7 +98,8 @@ public struct DevConsoleView: View {
                     }
                 }
                 .pickerStyle(MenuPickerStyle())
-                .frame(width: 130)
+                .controlSize(.small)
+                .frame(width: 120)
 
                 Picker("Seviye:", selection: $selectedLevel) {
                     Text("TÜMÜ").tag("TÜMÜ")
@@ -107,25 +108,32 @@ public struct DevConsoleView: View {
                     }
                 }
                 .pickerStyle(MenuPickerStyle())
-                .frame(width: 110)
+                .controlSize(.small)
+                .frame(width: 105)
 
                 HStack(spacing: 4) {
                     Image(systemName: "magnifyingglass")
                         .foregroundColor(.secondary)
+                        .font(.system(size: 11))
                     TextField("Loglarda ara...", text: $searchText)
                         .textFieldStyle(PlainTextFieldStyle())
+                        .font(.system(size: 11))
                 }
                 .padding(.horizontal, 8)
                 .padding(.vertical, 4)
                 .background(Color(NSColor.textBackgroundColor))
-                .cornerRadius(6)
+                .clipShape(RoundedRectangle(cornerRadius: 6))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 6)
+                        .stroke(Color.primary.opacity(0.1), lineWidth: 1)
+                )
 
                 Toggle("Oto-Kaydır", isOn: $autoScroll)
                     .toggleStyle(CheckboxToggleStyle())
-                    .font(.caption)
+                    .font(.caption2)
             }
             .padding(.horizontal, 14)
-            .padding(.vertical, 6)
+            .padding(.vertical, 5)
             .background(Color(NSColor.windowBackgroundColor))
 
             Divider()
@@ -209,7 +217,7 @@ public struct DevConsoleView: View {
             .padding(.vertical, 8)
             .background(Color(NSColor.windowBackgroundColor))
         }
-        .frame(minHeight: 240, maxHeight: 380)
+        .frame(minHeight: 180, idealHeight: 240, maxHeight: 300)
         .onAppear {
             updateMetrics()
         }
